@@ -4,13 +4,10 @@
 # @Time     : 2018/8/22 14:27 
 # @Software : PyCharm
 import os
-
-
 import numpy as np
 from keras.models import load_model
 from tqdm import tqdm
 import pandas as pd
-from get_log_fbank import get_log_fbank
 
 
 def split_data(data_dir, save_dir, usage, enroll_sentence_nums=20, val_sentence_nums=100):
@@ -50,24 +47,7 @@ def split_data(data_dir, save_dir, usage, enroll_sentence_nums=20, val_sentence_
                 f.write(line)
 
 
-
-def get_strangerlist(data_dir, sentence_nums=5):
-    if not os.path.exists(save_dir):
-        os.makedirs(save_dir)
-    # 获取文件列表
-    data_list = []
-    for dir in os.listdir(data_dir):
-        file_list = os.listdir(os.path.join(data_dir, dir))
-        data_list.append([os.path.join(data_dir, dir, file) for file in file_list])
-
-    stranger_list = []
-    for i, file_list in enumerate(data_list):
-        stranger_list.append((file_list[:sentence_nums], str(i).zfill(4)))
-
-    return stranger_list
-
-
-def features2csv(data_list_dir, saveDir, category, model, mean=True, sentence_nums=20):
+def features2csv(data_list_dir, save_dir, category, model, mean=True, sentence_nums=20):
     def caculate_features(fb_input, mean=mean):
         features = model.predict(fb_input)
         features = np.array(features)
@@ -100,6 +80,16 @@ def features2csv(data_list_dir, saveDir, category, model, mean=True, sentence_nu
     features_df.to_csv(df_save_path, index=False, encoding="utf-8")
 
 
+def read_features(csv_dir, category):
+    csv_path = os.path.join(csv_dir, category + "_features.csv")
+    data = pd.read_csv(csv_path, encoding="utf-8")
+    data_dict = data.set_index("label").to_dict()["features_str"]
+
+    for key,val in data_dict.items():
+        data_dict[key] = list(map(float, val.split(",")))
+    return data_dict
+
+
 
 def getList(save_dir, category):
     """
@@ -122,28 +112,7 @@ def getList(save_dir, category):
                 line = os.path.join(subpath, filename) + " " + subname + "\n"
                 f.write(line)
 
-
-def enrollment():
-    # 获取上级目录
-    parent_dir = os.path.dirname(os.path.abspath("__file__"))
-    data_dir = os.path.join(parent_dir, "data")
-
-    usage = "dev"
-    save_dir = "eer_data"
-    stranger_dir = os.path.join(save_dir, "stranger")
-    enrolled_dir = os.path.join(save_dir, "enrolled")
-
-    model = load_model(weight_path)
-
-    # 分割 注册人 数据集
-    enroll_data, val_data = split_data(data_dir, usage, enroll_sentence_nums=20, val_sentence_nums=3)
-
-    wav2fb(enroll_data, enrolled_dir, "enroll")
-    wav2fb(val_data, enrolled_dir, "val")
-    getList(enrolled_dir, "enroll")
-    getList(enrolled_dir, "val")
-
-
+ 
 if __name__ == "__main__":
     # 获取上级目录
     parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
@@ -154,7 +123,7 @@ if __name__ == "__main__":
     stranger_dir = os.path.join(save_dir, "stranger")
     enrolled_dir = os.path.join(save_dir, "enrolled")
     enroll_sentence_nums = 20
-    val_sentence_nums = 100
+    val_sentence_nums = 3
 
     model = load_model(weight_path)
 
@@ -162,8 +131,10 @@ if __name__ == "__main__":
     # split_data(data_dir, save_dir, category, enroll_sentence_nums=20, val_sentence_nums=3)
 
     # 将注册人的注册语句特征写入csv文件
-    features2csv(save_dir, save_dir, "enroll", model, mean=True, sentence_nums=enroll_sentence_nums)
+    # features2csv(save_dir, save_dir, "enroll", model, mean=True, sentence_nums=enroll_sentence_nums)
+    #
+    # # 将注册人的验证语句特征写入csv文件
+    # features2csv(save_dir, save_dir, "validate", model, mean=True, sentence_nums=val_sentence_nums)
 
-    # 将注册人的验证语句特征写入csv文件
-    features2csv(save_dir, save_dir, "validate", model, mean=True, sentence_nums=val_sentence_nums)
-
+    # 读取注册人特征信息
+    enroll_features = read_features(save_dir,"enroll")
