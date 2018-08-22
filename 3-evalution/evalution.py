@@ -1,7 +1,7 @@
 #!/usr/env/python python3
 # -*- coding: utf-8 -*-
-# @File     : enrollment.py
-# @Time     : 2018/8/22 14:27 
+# @File     : evalution.py
+# @Time     : 2018/8/22 17:33 
 # @Software : PyCharm
 import os
 import numpy as np
@@ -10,7 +10,7 @@ from tqdm import tqdm
 import pandas as pd
 
 
-def split_data(data_dir, save_dir, usage, enroll_sentence_nums=20, val_sentence_nums=100):
+def split_data(data_dir, save_dir, usage, sentence_nums=20):
     """
 
     :paramdataDir: 文件存储路径
@@ -27,24 +27,17 @@ def split_data(data_dir, save_dir, usage, enroll_sentence_nums=20, val_sentence_
         data_list.append([os.path.join(data_path, dir, file) for file in file_list])
 
     # (list , label)
-    enroll_list = []
-    val_list = []
+    stranger_list = []
 
     for i, file_list in enumerate(data_list):
-        enroll_list.append((file_list[:enroll_sentence_nums], i))
-        val_list.append((file_list[enroll_sentence_nums:enroll_sentence_nums + val_sentence_nums], i))
+        stranger_list.append((file_list[:sentence_nums], i))
 
-    with open(os.path.join(save_dir, "enroll_list.txt"), "w") as f:
-        for (file_list, label) in tqdm(enroll_list):
+    with open(os.path.join(save_dir, "stranger_list.txt"), "w") as f:
+        for (file_list, label) in tqdm(stranger_list):
             for file in file_list:
                 line = file + " " + str(label).zfill(4) + "\n"
                 f.write(line)
 
-    with open(os.path.join(save_dir, "validate_list.txt"), "w") as f:
-        for (file_list, label) in tqdm(val_list):
-            for file in file_list:
-                line = file + " " + str(label).zfill(4) + "\n"
-                f.write(line)
 
 
 def features2csv(data_list_dir, save_dir, category, model, mean=True, sentence_nums=20):
@@ -117,22 +110,18 @@ if __name__ == "__main__":
     parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
     data_dir = os.path.join(parent_dir, "data/enrollment_evalution")
     weight_path = "D:\PythonProject\speakerRecognition\spk_pool.h5"
-    category = "dev"
-    save_dir = os.path.join(parent_dir,"2-enrollment")
-    enrolled_dir = os.path.join(save_dir, "enrolled")
-    enroll_sentence_nums = 20
-    val_sentence_nums = 3
+    category = "test"
+    save_dir = os.path.join(parent_dir,"3-evalution")
+    stranger_sentence_nums = 20
 
     model = load_model(weight_path)
 
-    # 分割 注册人 数据集 并写入txt
-    # split_data(data_dir, save_dir, category, enroll_sentence_nums=20, val_sentence_nums=3)
+    # 分割 陌生人 数据集 并写入txt
+    # split_data(data_dir, save_dir, category, sentence_nums=stranger_sentence_nums)
 
-    # 将注册人的注册语句特征写入csv文件
-    # features2csv(save_dir, save_dir, "enroll", model, mean=True, sentence_nums=enroll_sentence_nums)
-    #
-    # # 将注册人的验证语句特征写入csv文件
-    # features2csv(save_dir, save_dir, "validate", model, mean=True, sentence_nums=val_sentence_nums)
+    # 将陌生人的注册语句特征写入csv文件
+    # features2csv(save_dir, save_dir, "stranger", model, mean=True, sentence_nums=stranger_sentence_nums)
 
-    # 读取注册人特征信息
-    enroll_features = read_features(save_dir,"enroll")
+
+    # 读取陌生人特征信息
+    # enroll_features = read_features(save_dir,"stranger") 
