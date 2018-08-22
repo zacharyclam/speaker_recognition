@@ -111,7 +111,7 @@ def confusion_matrix_test(data_dir, usage, weight_path, predict_path, enroll_sen
 if __name__ == "__main__":
     data_dir = "data"
     usage = "dev"
-    weight_path = "spk.h5"
+    weight_path = "D:\PythonProject\speakerRecognition\spk_pool.h5"
     predict_path = "predict.txt"
     enroll_sentence_nums = 20
     val_sentence_nums = 100

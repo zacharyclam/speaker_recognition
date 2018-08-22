@@ -100,7 +100,7 @@ def generate_fit(path, batch_size, nClasses):
 
 if __name__ == '__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = "1"
-    # pid 16366
+    # pid 23670
     # nohup python3 -u  train.py --batch_size=128 --num_epochs=1000 --learn_rate=0.0001 --category="train" > logs.out 2>&1 &
     # python train.py --batch_size=32 --num_epochs=200 --num_classes=20 --category="test"
 
