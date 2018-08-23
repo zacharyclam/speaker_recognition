@@ -4,23 +4,22 @@
 # @Time     : 2018/8/22 17:50 
 # @Software : PyCharm
 
-import tensorflow as tf
 import pandas as pd
 import numpy as np
 import os
-
+from absl import flags, app
 from tqdm import tqdm
 
 parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
 
-tf.app.flags.DEFINE_string(
+FLAGS = flags.FLAGS
+
+flags.DEFINE_string(
     "enrollment_dir", default=os.path.join(parent_dir, "2-enrollment"), help="the dir of enrolllment"
 )
-tf.app.flags.DEFINE_string(
+app.flags.DEFINE_string(
     "evalution_dir", default=os.path.join(parent_dir, "3-evalution"), help="the dir of evalution"
 )
-
-FLAGS = tf.app.flags.FLAGS
 
 
 def read_features(csv_dir, category):
@@ -28,10 +27,6 @@ def read_features(csv_dir, category):
     data = pd.read_csv(csv_path, encoding="utf-8")
     for label, features in data.values:
         yield label, np.array(list(map(float, features.split(","))))
-    # for key, val in data_dict.items():
-    #     print(key,val)
-    #     data_dict[key] = list(map(float, val.split(",")))
-    # return data_dict
 
 
 def getCDS(a, b):
@@ -49,7 +44,7 @@ def getCDS(a, b):
     return cds
 
 
-if __name__ == "__main__":
+def main(argv):
     validate_dict = read_features(FLAGS.enrollment_dir, "validate")
     strange_dict = read_features(FLAGS.evalution_dir, "stranger")
 
@@ -61,7 +56,7 @@ if __name__ == "__main__":
             enroll_dict = read_features(FLAGS.enrollment_dir, "enroll")
             distance = [getCDS(val_feat, enroll_feat) for _, enroll_feat in enroll_dict]
             predict_label = np.argmax(distance, axis=0)
-            line = str(distance[predict_label]) + " "
+            line = str(distance[int(predict_label)]) + " "
             if predict_label == val_label:
                 line += "tp\n"
             else:
@@ -72,7 +67,9 @@ if __name__ == "__main__":
             enroll_dict = read_features(FLAGS.enrollment_dir, "enroll")
             distance = [getCDS(stranger_feat, enroll_feat) for _, enroll_feat in enroll_dict]
             predict_label = np.argmax(distance, axis=0)
-            line = str(distance[predict_label]) + " n\n"
+            line = str(distance[int(predict_label)]) + " n\n"
             f.write(line)
 
-    # print("label:{} predict:{} score:{}".format(val_label, predict_label, distance[predict_label]))
+
+if __name__ == "__main__":
+    app.run(main)

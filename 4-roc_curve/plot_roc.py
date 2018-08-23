@@ -6,20 +6,23 @@
 import os
 import numpy as np
 import matplotlib.pylab as plt
-import operator
+from absl import app, flags
+
+FLAGS = flags.FLAGS
 
 parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
-score_path = "score.txt"
 
-score_dict = {}
+flags.DEFINE_string(
+    "save_dir", os.path.join(parent_dir, "results/plots"),
+    "the generate plots image dir")
 
-with open(score_path, "r") as f:
-    for line in f:
-        score, label = line.split(" ")
-        score_dict[float(score)] = label.rstrip("\n")
+flags.DEFINE_string(
+    "polt_name", "plt_roc_test",
+    "the roc image's name")
 
-# 按照 score 排序
-score_dict = sorted(score_dict.items(), key=operator.itemgetter(0))
+flags.DEFINE_string(
+    "score_path", os.path.join(parent_dir, "4-roc_curve", "score.txt"),
+    "the score txt path")
 
 
 def cal_rate(score_dict, thres):
@@ -53,47 +56,62 @@ def cal_rate(score_dict, thres):
     TNR = float(TN) / float(FP + TN)
     FNR = float(FN) / float(TP + FN)
     FPR = float(FP) / float(FP + TN)
-    # print accracy, precision, TPR, TNR, FNR, FPR
+
     return accracy, precision, TPR, TNR, FNR, FPR
 
 
-# min_score = min(score_dict, key=score_dict.get)
-# max_score = max(score_dict, key=score_dict.get)
+def plot_roc(score_list, save_dir, polt_name):
+
+    save_path = os.path.join(save_dir, polt_name + ".jpg")
+    # 按照 score 排序
+    threshold_value = sorted([score for score, _ in score_list])
+
+    threshold_num = len(threshold_value)
+    accracy_array = np.zeros(threshold_num)
+    precision_array = np.zeros(threshold_num)
+    TPR_array = np.zeros(threshold_num)
+    TNR_array = np.zeros(threshold_num)
+    FNR_array = np.zeros(threshold_num)
+    FPR_array = np.zeros(threshold_num)
+
+    # calculate all the rates
+    for thres in range(threshold_num):
+        accracy, precision, TPR, TNR, FNR, FPR = cal_rate(score_list, threshold_value[thres])
+        accracy_array[thres] = accracy
+        precision_array[thres] = precision
+        TPR_array[thres] = TPR
+        TNR_array[thres] = TNR
+        FNR_array[thres] = FNR
+        FPR_array[thres] = FPR
+
+    AUC = np.trapz(TPR_array, FPR_array)
+    threshold = np.argmin(abs(FNR_array - FPR_array))
+    EER = (FNR_array[threshold] + FPR_array[threshold]) / 2
+    # print('EER : %f AUC : %f' % (EER, -AUC))
+    plt.plot(FPR_array, TPR_array)
+
+    plt.title('ROC')
+    plt.xlabel('FPR')
+    plt.ylabel('TPR')
+    plt.text(0.4, 0, s="EER :{} AUC :{}".format(round(EER, 2), round(-AUC, 2)), fontsize=10)
+    plt.legend()
+    plt.savefig(save_path)
+    plt.show()
 
 
-# threshold_vaule = np.arange(min_score, max_score, 0.0001)
-threshold_value = [score_tuple[0] for score_tuple in score_dict]
+def main(argv):
+    score_list = []
 
-threshold_num = len(threshold_value)
-accracy_array = np.zeros(threshold_num)
-precision_array = np.zeros(threshold_num)
-TPR_array = np.zeros(threshold_num)
-TNR_array = np.zeros(threshold_num)
-FNR_array = np.zeros(threshold_num)
-FPR_array = np.zeros(threshold_num)
+    with open(FLAGS.score_path, "r") as f:
+        for line in f:
+            score, label = line.split(" ")
+            score_list.append([float(score), label.rstrip("\n")])
 
-# calculate all the rates
-for thres in range(threshold_num):
-    accracy, precision, TPR, TNR, FNR, FPR = cal_rate(score_dict, threshold_value[thres])
-    accracy_array[thres] = accracy
-    precision_array[thres] = precision
-    TPR_array[thres] = TPR
-    TNR_array[thres] = TNR
-    FNR_array[thres] = FNR
-    FPR_array[thres] = FPR
-# print TPR_array
-# print FPR_array
+    plot_roc(score_list, FLAGS.save_dir, FLAGS.polt_name)
 
-AUC = np.trapz(TPR_array, FPR_array)
-threshold = np.argmin(abs(FNR_array - FPR_array))
-EER = (FNR_array[threshold] + FPR_array[threshold]) / 2
-print('EER : %f AUC : %f' % (EER, -AUC))
-plt.plot(FPR_array, TPR_array)
+    # os.path.join(parent_dir, "results/plots", "plt_roc_spk-00344-0.98.jpg")
 
-plt.title('ROC')
-plt.xlabel('FPR')
-plt.ylabel('TPR')
-plt.text(0.4, 0, s="EER :{} AUC :{}".format(round(EER, 2), round(-AUC, 2)), fontsize=10)
-plt.legend()
-plt.savefig(os.path.join(parent_dir, "results", "plt_roc2.jpg"))
-plt.show()
+
+if __name__ == "__main__":
+
+    app.run(main)

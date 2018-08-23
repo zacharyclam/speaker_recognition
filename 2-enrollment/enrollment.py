@@ -8,6 +8,34 @@ import numpy as np
 from keras.models import load_model
 from tqdm import tqdm
 import pandas as pd
+from absl import flags, app
+
+FLAGS = flags.FLAGS
+
+parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
+
+flags.DEFINE_string(
+    "data_dir", os.path.join(parent_dir, "data/enrollment_evalution"),
+    "the enrolled data dir")
+
+flags.DEFINE_string(
+    "weight_path", "D:\PythonProject\speakerRecognition\model\spk-00344-0.98.h5",
+    "the model dir")
+
+flags.DEFINE_string(
+    "category", "dev", "the category of data")
+
+flags.DEFINE_string(
+    "enrolled", os.path.join(parent_dir, "2-enrollment"),
+    "the enrolled features save dir")
+
+flags.DEFINE_integer(
+    "enroll_sentence_nums", 20,
+    "the enroll sentence nums")
+
+flags.DEFINE_integer(
+    "val_sentence_nums", 100,
+    "the validate sentence nums")
 
 
 def split_data(data_dir, save_dir, usage, enroll_sentence_nums=20, val_sentence_nums=100):
@@ -48,7 +76,12 @@ def split_data(data_dir, save_dir, usage, enroll_sentence_nums=20, val_sentence_
 
 
 def features2csv(data_list_dir, save_dir, category, model, mean=True, sentence_nums=20):
-    def caculate_features(fb_input, mean=mean):
+    def caculate_features(fb_input):
+        """
+
+        :param fb_input: fbank特征向量
+        :return:  d-vector
+        """
         features = model.predict(fb_input)
         features = np.array(features)
         if mean:
@@ -63,25 +96,25 @@ def features2csv(data_list_dir, save_dir, category, model, mean=True, sentence_n
     # (label, features)
     people_list = []
     with open(data_path) as f:
-        X = []
+        fbank_list = []
         cnt = 0
         for line in tqdm(f):
             bin_path, label = line.split(" ")
-            x = np.fromfile(bin_path, dtype=np.float)
-            X.append(x)
+            fbank = np.fromfile(bin_path, dtype=np.float)
+            fbank_list.append(fbank)
 
             cnt += 1
             if cnt % sentence_nums == 0:
-                features = caculate_features(np.array(X)[:, :, np.newaxis], mean)
+                features = caculate_features(np.array(fbank_list)[:, :, np.newaxis])
                 cnt = 0
-                X = []
+                fbank_list = []
                 if mean is True:
                     people_list.append((label.rstrip("\n"), ",".join(str(feat) for feat in features)))
                 else:
-                    label = label.rstrip("\n")
                     for feature in features:
                         people_list.append((label.rstrip("\n"), ",".join(str(feat) for feat in feature)))
 
+    # 将特征写入 csv 文件
     features_df = pd.DataFrame(people_list, columns=["label", "features_str"])
     df_save_path = os.path.join(save_dir, category + "_features.csv")
     features_df.to_csv(df_save_path, index=False, encoding="utf-8")
@@ -93,36 +126,26 @@ def read_features(csv_dir, category):
     data_list = data.values
     for label, features in data_list:
         yield label, list(map(float, features.split(",")))
-    # for key, val in data_dict.items():
-    #     print(key,val)
-    #     data_dict[key] = list(map(float, val.split(",")))
-    # return data_dict
+
+
+def main(argv):
+    model = load_model(FLAGS.weight_path)
+
+    # 分割 注册人 数据集 并写入txt
+    split_data(FLAGS.data_dir, FLAGS.save_dir, FLAGS.category, enroll_sentence_nums=FLAGS.enroll_sentence_nums,
+               val_sentence_nums=FLAGS.val_sentence_nums)
+
+    # 将注册人的注册语句特征写入csv文件
+    features2csv(FLAGS.save_dir, FLAGS.save_dir, "enroll", model, mean=True, sentence_nums=FLAGS.enroll_sentence_nums)
+
+    # 将注册人的验证语句特征写入csv文件
+    features2csv(FLAGS.save_dir, FLAGS.save_dir, "validate", model, mean=False, sentence_nums=FLAGS.val_sentence_nums)
+
+    # # 读取注册人特征信息
+    # enroll_features = read_features(FLAGS.save_dir, "enroll")
+    # for label, features in enroll_features:
+    #     print(label, features)
 
 
 if __name__ == "__main__":
-    # 获取上级目录
-    parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
-    data_dir = os.path.join(parent_dir, "data/enrollment_evalution")
-    weight_path = "D:\PythonProject\speakerRecognition\spk_pool_1.h5"
-    category = "dev"
-    save_dir = os.path.join(parent_dir, "2-enrollment")
-    enrolled_dir = os.path.join(save_dir, "enrolled")
-    enroll_sentence_nums = 20
-    val_sentence_nums = 100
-
-    model = load_model(weight_path)
-
-    # 分割 注册人 数据集 并写入txt
-    # split_data(data_dir, save_dir, category, enroll_sentence_nums=enroll_sentence_nums,
-    #            val_sentence_nums=val_sentence_nums)
-
-    # 将注册人的注册语句特征写入csv文件
-    features2csv(save_dir, save_dir, "enroll", model, mean=True, sentence_nums=enroll_sentence_nums)
-    #
-    # # # 将注册人的验证语句特征写入csv文件
-    features2csv(save_dir, save_dir, "validate", model, mean=False, sentence_nums=val_sentence_nums)
-    #
-    # # 读取注册人特征信息
-    # enroll_features = read_features(save_dir, "enroll")
-    # for label, features in enroll_features:
-    #     print(label,features)
+    app.run(main)

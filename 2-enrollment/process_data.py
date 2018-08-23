@@ -51,7 +51,6 @@ def wav2fb(dataDir, saveDir, usage, test_scale=0.05):
                 fbank_feat.tofile(os.path.join(subDir, fileName + ".bin"))
 
 
-
 parse = argparse.ArgumentParser()
 
 parse.add_argument("--data_dir", type=str, default="D:\PythonProject\speakerRecognition\data")
