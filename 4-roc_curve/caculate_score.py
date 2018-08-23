@@ -11,13 +11,13 @@ import os
 
 from tqdm import tqdm
 
-parent_dir =  os.path.abspath(os.path.join(os.getcwd(),".."))
+parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
 
 tf.app.flags.DEFINE_string(
-    "enrollment_dir", default=os.path.join(parent_dir,"2-enrollment"), help= "the dir of enrolllment"
+    "enrollment_dir", default=os.path.join(parent_dir, "2-enrollment"), help="the dir of enrolllment"
 )
 tf.app.flags.DEFINE_string(
-    "evalution_dir", default=os.path.join(parent_dir,"3-evalution"), help= "the dir of evalution"
+    "evalution_dir", default=os.path.join(parent_dir, "3-evalution"), help="the dir of evalution"
 )
 
 FLAGS = tf.app.flags.FLAGS
