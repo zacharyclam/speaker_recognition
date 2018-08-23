@@ -59,7 +59,9 @@ def features2csv(data_list_dir, save_dir, category, model, mean=True, sentence_n
             return features
 
     data_path = os.path.join(data_list_dir, category + "_list.txt")
-    people_dict = {}
+
+    # (label, features)
+    people_list = []
     with open(data_path) as f:
         X = []
         cnt = 0
@@ -73,9 +75,14 @@ def features2csv(data_list_dir, save_dir, category, model, mean=True, sentence_n
                 features = caculate_features(np.array(X)[:, :, np.newaxis], mean)
                 cnt = 0
                 X = []
-                people_dict[label.rstrip("\n")] = ",".join(str(feat) for feat in features)
+                if mean is True:
+                    people_list.append((label.rstrip("\n"), ",".join(str(feat) for feat in features)))
+                else:
+                    label = label.rstrip("\n")
+                    for feature in features:
+                        people_list.append((label.rstrip("\n"), ",".join(str(feat) for feat in feature)))
 
-    features_df = pd.DataFrame(list(people_dict.items()), columns=["label", "features_str"])
+    features_df = pd.DataFrame(people_list, columns=["label", "features_str"])
     df_save_path = os.path.join(save_dir, category + "_features.csv")
     features_df.to_csv(df_save_path, index=False, encoding="utf-8")
 
@@ -83,56 +90,39 @@ def features2csv(data_list_dir, save_dir, category, model, mean=True, sentence_n
 def read_features(csv_dir, category):
     csv_path = os.path.join(csv_dir, category + "_features.csv")
     data = pd.read_csv(csv_path, encoding="utf-8")
-    data_dict = data.set_index("label").to_dict()["features_str"]
-
-    for key,val in data_dict.items():
-        data_dict[key] = list(map(float, val.split(",")))
-    return data_dict
-
-
-def getList(save_dir, category):
-    """
-    将bin文件路径及标签写入txt
-
-    :param save_dir: 保存文件路径
-    :param usage: 数据集类别
-    :return:
-    """
-    tname = os.path.join(save_dir, category + "_list.txt")
-    data_dir = os.path.join(save_dir, category)
-    # 获取子文件夹下的文件列表
-    sub_dir = os.listdir(data_dir)
-
-    with open(tname, "w") as f:
-        for subname in sub_dir:
-            subpath = os.path.join(data_dir, subname)
-            for filename in os.listdir(subpath):
-                # 文件路径 标签
-                line = os.path.join(subpath, filename) + " " + subname + "\n"
-                f.write(line)
+    data_list = data.values
+    for label, features in data_list:
+        yield label, list(map(float, features.split(",")))
+    # for key, val in data_dict.items():
+    #     print(key,val)
+    #     data_dict[key] = list(map(float, val.split(",")))
+    # return data_dict
 
 
 if __name__ == "__main__":
     # 获取上级目录
     parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
     data_dir = os.path.join(parent_dir, "data/enrollment_evalution")
-    weight_path = "D:\PythonProject\speakerRecognition\spk_pool.h5"
+    weight_path = "D:\PythonProject\speakerRecognition\spk_pool_1.h5"
     category = "dev"
-    save_dir = os.path.join(parent_dir,"2-enrollment")
+    save_dir = os.path.join(parent_dir, "2-enrollment")
     enrolled_dir = os.path.join(save_dir, "enrolled")
     enroll_sentence_nums = 20
-    val_sentence_nums = 3
+    val_sentence_nums = 100
 
     model = load_model(weight_path)
 
     # 分割 注册人 数据集 并写入txt
-    # split_data(data_dir, save_dir, category, enroll_sentence_nums=20, val_sentence_nums=3)
+    # split_data(data_dir, save_dir, category, enroll_sentence_nums=enroll_sentence_nums,
+    #            val_sentence_nums=val_sentence_nums)
 
     # 将注册人的注册语句特征写入csv文件
-    # features2csv(save_dir, save_dir, "enroll", model, mean=True, sentence_nums=enroll_sentence_nums)
+    features2csv(save_dir, save_dir, "enroll", model, mean=True, sentence_nums=enroll_sentence_nums)
     #
-    # # 将注册人的验证语句特征写入csv文件
-    # features2csv(save_dir, save_dir, "validate", model, mean=True, sentence_nums=val_sentence_nums)
-
-    # 读取注册人特征信息
-    enroll_features = read_features(save_dir,"enroll")
+    # # # 将注册人的验证语句特征写入csv文件
+    features2csv(save_dir, save_dir, "validate", model, mean=False, sentence_nums=val_sentence_nums)
+    #
+    # # 读取注册人特征信息
+    # enroll_features = read_features(save_dir, "enroll")
+    # for label, features in enroll_features:
+    #     print(label,features)

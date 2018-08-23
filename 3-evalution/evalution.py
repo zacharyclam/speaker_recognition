@@ -39,7 +39,6 @@ def split_data(data_dir, save_dir, usage, sentence_nums=20):
                 f.write(line)
 
 
-
 def features2csv(data_list_dir, save_dir, category, model, mean=True, sentence_nums=20):
     def caculate_features(fb_input, mean=mean):
         features = model.predict(fb_input)
@@ -52,7 +51,9 @@ def features2csv(data_list_dir, save_dir, category, model, mean=True, sentence_n
             return features
 
     data_path = os.path.join(data_list_dir, category + "_list.txt")
-    people_dict = {}
+
+    # (label, features)
+    people_dict = []
     with open(data_path) as f:
         X = []
         cnt = 0
@@ -66,9 +67,14 @@ def features2csv(data_list_dir, save_dir, category, model, mean=True, sentence_n
                 features = caculate_features(np.array(X)[:, :, np.newaxis], mean)
                 cnt = 0
                 X = []
-                people_dict[label.rstrip("\n")] = ",".join(str(feat) for feat in features)
+                if mean is True:
+                    people_dict.append((label.rstrip("\n"), ",".join(str(feat) for feat in features)))
+                else:
+                    label = label.rstrip("\n")
+                    for feature in features:
+                        people_dict.append((label.rstrip("\n"), ",".join(str(feat) for feat in feature)))
 
-    features_df = pd.DataFrame(list(people_dict.items()), columns=["label", "features_str"])
+    features_df = pd.DataFrame(people_dict, columns=["label", "features_str"])
     df_save_path = os.path.join(save_dir, category + "_features.csv")
     features_df.to_csv(df_save_path, index=False, encoding="utf-8")
 
@@ -112,7 +118,7 @@ if __name__ == "__main__":
     weight_path = "D:\PythonProject\speakerRecognition\spk_pool.h5"
     category = "test"
     save_dir = os.path.join(parent_dir,"3-evalution")
-    stranger_sentence_nums = 20
+    stranger_sentence_nums = 100
 
     model = load_model(weight_path)
 
@@ -120,7 +126,7 @@ if __name__ == "__main__":
     # split_data(data_dir, save_dir, category, sentence_nums=stranger_sentence_nums)
 
     # 将陌生人的注册语句特征写入csv文件
-    # features2csv(save_dir, save_dir, "stranger", model, mean=True, sentence_nums=stranger_sentence_nums)
+    features2csv(save_dir, save_dir, "stranger", model, mean=False, sentence_nums=stranger_sentence_nums)
 
 
     # 读取陌生人特征信息
