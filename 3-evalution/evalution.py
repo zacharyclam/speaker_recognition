@@ -21,7 +21,7 @@ flags.DEFINE_string(
     "the enrolled data dir")
 
 flags.DEFINE_string(
-    "weight_path", "D:\PythonProject\speakerRecognition\model\spk-00344-0.98.h5",
+    "weight_path", "D:\PythonProject\speakerRecognition\model\spk-00298-0.99.h5",
     "the model dir")
 
 flags.DEFINE_string(
