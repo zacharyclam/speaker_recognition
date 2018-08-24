@@ -16,9 +16,9 @@ def get_log_fbank(wavname, winlen=0.025, winstep=0.01, nfilt=40):
         sig = sig.tolist() / max(max(sig), -min(sig))
     except ValueError:
         # 读取文件为空
-        print(wavname)
         return None
     sig = sig.tolist()
+    # 将音频裁剪至3s
     if len(sig) > 3 * rate:
         sig = sig[:3 * rate]
     else:
