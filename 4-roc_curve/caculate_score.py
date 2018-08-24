@@ -9,24 +9,10 @@ from absl import flags, app
 from tqdm import tqdm
 import sys
 
-sys.path.append("D:\\PythonProject\\speakerRecognition")
+sys.path.append(os.getcwd())
 
 from utils.csv_util import read_features
-
-
-def get_cds(a, b):
-    """
-    返回归一化后的余弦距离，得分CDS越接近1越好
-    :param a: shape[1,-1]
-    :param b: shape[1, -1]
-    :return:
-    """
-
-    num = float(a.dot(b.T))
-    denom = np.linalg.norm(a) * np.linalg.norm(b)
-    cds = num / denom  # 余弦值
-    cds = 0.5 + 0.5 * cds  # 归一化
-    return cds
+from utils.calculate_cds import get_cds
 
 
 parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))

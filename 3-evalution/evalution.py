@@ -8,10 +8,9 @@ from keras.models import load_model
 from tqdm import tqdm
 from absl import flags
 from absl import app
+
 import sys
-
-sys.path.append("D:\\PythonProject\\speakerRecognition")
-
+sys.path.append(os.getcwd())
 from utils.csv_util import features2csv
 
 FLAGS = flags.FLAGS
