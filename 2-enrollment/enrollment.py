@@ -32,7 +32,7 @@ flags.DEFINE_string(
     "the model dir")
 
 flags.DEFINE_string(
-    "category", "dev", "the category of data")
+    "category", "test", "the category of data")
 
 flags.DEFINE_integer(
     "enroll_sentence_nums", 20,
@@ -43,7 +43,7 @@ flags.DEFINE_integer(
     "the validate sentence nums")
 
 
-def split_data(data_dir, save_dir, usage, enroll_sentence_nums=20, val_sentence_nums=100):
+def split_sentences(data_dir, save_dir, usage, enroll_sentence_nums=20, val_sentence_nums=100):
     """
 
     :paramdataDir: 文件存储路径
@@ -83,19 +83,14 @@ def split_data(data_dir, save_dir, usage, enroll_sentence_nums=20, val_sentence_
 def main(argv):
     model = load_model(FLAGS.weight_path)
     # 分割 注册人 数据集 并写入txt
-    split_data(FLAGS.data_dir, FLAGS.save_dir, FLAGS.category, enroll_sentence_nums=FLAGS.enroll_sentence_nums,
-               val_sentence_nums=FLAGS.val_sentence_nums)
+    split_sentences(FLAGS.data_dir, FLAGS.save_dir, FLAGS.category, enroll_sentence_nums=FLAGS.enroll_sentence_nums,
+                    val_sentence_nums=FLAGS.val_sentence_nums)
 
     # 将注册人的注册语句特征写入csv文件
     features2csv(FLAGS.save_dir, category="enroll", model=model, mean=True, sentence_nums=FLAGS.enroll_sentence_nums)
 
     # 将注册人的验证语句特征写入csv文件
     features2csv(FLAGS.save_dir, category="validate", model=model, mean=False, sentence_nums=FLAGS.val_sentence_nums)
-
-    # # 读取注册人特征信息
-    # enroll_features = read_features(FLAGS.save_dir, "enroll")
-    # for label, features in enroll_features:
-    #     print(label, features)
 
 
 if __name__ == "__main__":
