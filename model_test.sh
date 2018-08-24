@@ -37,19 +37,20 @@ stranger_sentence_nums=100
 python -u ./sep_model_weight.py --checkpoint_path=$checkpoint_path --model_save_path=$weight_path
 echo "模型权重导出完成"
 
-python -u ./2-enrollment/enrollment.py --data_dir=$data_dir --save_dir=$save_dir -weight_path=$weight_path \
+python -u ./code/2-enrollment/enrollment.py --data_dir=$data_dir --save_dir=$save_dir -weight_path=$weight_path \
                                       --category="dev" --enroll_sentence_nums=$enroll_sentence_nums \
                                       --val_sentence_nums=$val_sentence_nums
 echo "注册人提取特征完成"
 
-python -u ./3-evalution/evalution.py --data_dir=$data_dir --save_dir=$save_dir -weight_path=$weight_path \
+python -u ./code/3-evalution/evalution.py --data_dir=$data_dir --save_dir=$save_dir -weight_path=$weight_path \
                                       --category="test" --stranger_sentence_nums=$stranger_sentence_nums \
 echo "陌生人提取特征完成"
 
-python -u ./4-roc_curve/caculate_score.py --features_dir=$features_dir --score_dir=$score_dir
+python -u ./code/4-roc_curve/caculate_score.py --features_dir=$features_dir --score_dir=$score_dir
 echo "score 计算完成"
 
-python -u ./4-roc_curve/plot_roc.py --save_plot_dir=$save_plot_dir --score_dir=$score_dir --plot_name=$plot_name
+python -u ./code/4-roc_curve/plot_roc.py --save_plot_dir=$save_plot_dir --score_dir=$score_dir --plot_name=$plot_name
+
 echo "roc 图绘制完成"
 
 read -p "按回车键退出"
