@@ -21,7 +21,7 @@ flags.DEFINE_string(
     "the enrolled data dir")
 
 flags.DEFINE_string(
-    "weight_path", "D:\PythonProject\speakerRecognition\model\spk-00298-0.99.h5",
+    "weight_path", "D:\PythonProject\speakerRecognition\model\spk-00152-0.88.h5",
     "the model dir")
 
 flags.DEFINE_string(
@@ -65,7 +65,7 @@ def split_data(data_dir, save_dir, usage, sentence_nums=20):
                 f.write(line)
 
 
-def features2csv(data_list_dir, save_dir, category, model, mean=True, sentence_nums=20):
+def features2csv(save_dir, category, model, mean=True, sentence_nums=20):
     def caculate_features(fb_input):
         """
 
@@ -81,7 +81,7 @@ def features2csv(data_list_dir, save_dir, category, model, mean=True, sentence_n
             # (N,256)
             return features
 
-    data_path = os.path.join(data_list_dir, category + "_list.txt")
+    data_path = os.path.join(save_dir, category + "_list.txt")
 
     # (label, features)
     people_list = []
@@ -125,7 +125,7 @@ def main(argv):
     split_data(FLAGS.data_dir, FLAGS.save_dir, FLAGS.category, sentence_nums=FLAGS.stranger_sentence_nums)
 
     # 将陌生人的注册语句特征写入csv文件
-    features2csv(FLAGS.save_dir, FLAGS.save_dir, "stranger", model, mean=False,
+    features2csv(FLAGS.save_dir, "stranger", model, mean=False,
                  sentence_nums=FLAGS.stranger_sentence_nums)
 
     # 读取陌生人特征信息

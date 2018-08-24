@@ -15,11 +15,12 @@ parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string(
-    "enrollment_dir", default=os.path.join(parent_dir, "2-enrollment"), help="the dir of enrolllment"
-)
-app.flags.DEFINE_string(
-    "evalution_dir", default=os.path.join(parent_dir, "3-evalution"), help="the dir of evalution"
-)
+    "features_dir", default=os.path.join(parent_dir, "results/features"),
+    help="the dir of enrolllment")
+
+flags.DEFINE_string(
+    "score_dir", default=os.path.join(parent_dir, "results/scores"),
+    help="the dir of saving score")
 
 
 def read_features(csv_dir, category):
@@ -45,15 +46,13 @@ def getCDS(a, b):
 
 
 def main(argv):
-    validate_dict = read_features(FLAGS.enrollment_dir, "validate")
-    strange_dict = read_features(FLAGS.evalution_dir, "stranger")
-
-    score_path = "score.txt"
+    validate_dict = read_features(FLAGS.features_dir, "validate")
+    strange_dict = read_features(FLAGS.features_dir, "stranger")
 
     # score n/tp/fp
-    with open(score_path, "w") as f:
+    with open(os.path.join(FLAGS.score_dir, "score.txt"), "w") as f:
         for val_label, val_feat in tqdm(validate_dict):
-            enroll_dict = read_features(FLAGS.enrollment_dir, "enroll")
+            enroll_dict = read_features(FLAGS.features_dir, "enroll")
             distance = [getCDS(val_feat, enroll_feat) for _, enroll_feat in enroll_dict]
             predict_label = np.argmax(distance, axis=0)
             line = str(distance[int(predict_label)]) + " "
@@ -64,7 +63,7 @@ def main(argv):
             f.write(line)
 
         for stranger_label, stranger_feat in tqdm(strange_dict):
-            enroll_dict = read_features(FLAGS.enrollment_dir, "enroll")
+            enroll_dict = read_features(FLAGS.features_dir, "enroll")
             distance = [getCDS(stranger_feat, enroll_feat) for _, enroll_feat in enroll_dict]
             predict_label = np.argmax(distance, axis=0)
             line = str(distance[int(predict_label)]) + " n\n"

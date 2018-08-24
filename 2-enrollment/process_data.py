@@ -24,7 +24,7 @@ def split_data(dataDir, usage):
     return dataList
 
 
-def wav2fb(dataDir, saveDir, usage, test_scale=0.05):
+def wav2fb(dataDir, saveDir, usage):
     """
     将wav音频文件提取 logfbank 特征后写入.bin二进制文件
     :param dataDir: wav文件路径
@@ -55,7 +55,7 @@ parse = argparse.ArgumentParser()
 
 parse.add_argument("--data_dir", type=str, default="D:\PythonProject\speakerRecognition\data")
 parse.add_argument("--save_dir", type=str, default="D:\PythonProject\speakerRecognition\data\enrollment_evalution")
-parse.add_argument("--category", type=str, help="the category of data", default="dev")
+parse.add_argument("--category", type=str, help="the category of data", default="test")
 
 if __name__ == "__main__":
     flags, unparsed = parse.parse_known_args(sys.argv[1:])

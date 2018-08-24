@@ -44,7 +44,7 @@ def getCDS(a, b):
     return cds
 
 
-model = load_model("spk.h5")
+model = load_model("spk-pool.h5")
 
 people1 = getFeatures(model, "a.wav")
 
@@ -56,3 +56,4 @@ print(getCDS(people1, people2))
 
 print(getCDS(people1, people3))
 print(getCDS(people2, people3))
+

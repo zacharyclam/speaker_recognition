@@ -19,19 +19,15 @@ flags.DEFINE_string(
     "the enrolled data dir")
 
 flags.DEFINE_string(
-    "save_dir", os.path.join(parent_dir, "2-enrollment"),
+    "save_dir", os.path.join(parent_dir, "results/features"),
     "the save data dir")
 
 flags.DEFINE_string(
-    "weight_path", "D:\PythonProject\speakerRecognition\model\spk-00298-0.99.h5",
+    "weight_path", "D:\PythonProject\speakerRecognition\model\spk-00152-0.88.h5",
     "the model dir")
 
 flags.DEFINE_string(
     "category", "dev", "the category of data")
-
-flags.DEFINE_string(
-    "enrolled", os.path.join(parent_dir, "2-enrollment"),
-    "the enrolled features save dir")
 
 flags.DEFINE_integer(
     "enroll_sentence_nums", 20,
@@ -79,7 +75,7 @@ def split_data(data_dir, save_dir, usage, enroll_sentence_nums=20, val_sentence_
                 f.write(line)
 
 
-def features2csv(data_list_dir, save_dir, category, model, mean=True, sentence_nums=20):
+def features2csv(save_dir, category, model, mean=True, sentence_nums=20):
     def caculate_features(fb_input):
         """
 
@@ -95,7 +91,7 @@ def features2csv(data_list_dir, save_dir, category, model, mean=True, sentence_n
             # (N,256)
             return features
 
-    data_path = os.path.join(data_list_dir, category + "_list.txt")
+    data_path = os.path.join(save_dir, category + "_list.txt")
 
     # (label, features)
     people_list = []
@@ -134,16 +130,15 @@ def read_features(csv_dir, category):
 
 def main(argv):
     model = load_model(FLAGS.weight_path)
-
     # 分割 注册人 数据集 并写入txt
     split_data(FLAGS.data_dir, FLAGS.save_dir, FLAGS.category, enroll_sentence_nums=FLAGS.enroll_sentence_nums,
                val_sentence_nums=FLAGS.val_sentence_nums)
 
     # 将注册人的注册语句特征写入csv文件
-    features2csv(FLAGS.save_dir, FLAGS.save_dir, "enroll", model, mean=True, sentence_nums=FLAGS.enroll_sentence_nums)
+    features2csv(FLAGS.save_dir, category="enroll", model=model, mean=True, sentence_nums=FLAGS.enroll_sentence_nums)
 
     # 将注册人的验证语句特征写入csv文件
-    features2csv(FLAGS.save_dir, FLAGS.save_dir, "validate", model, mean=False, sentence_nums=FLAGS.val_sentence_nums)
+    features2csv(FLAGS.save_dir, category="validate", model=model, mean=False, sentence_nums=FLAGS.val_sentence_nums)
 
     # # 读取注册人特征信息
     # enroll_features = read_features(FLAGS.save_dir, "enroll")

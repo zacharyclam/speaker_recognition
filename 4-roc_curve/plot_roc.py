@@ -13,16 +13,16 @@ FLAGS = flags.FLAGS
 parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
 
 flags.DEFINE_string(
-    "save_dir", os.path.join(parent_dir, "results/plots"),
+    "save_plot_dir", os.path.join(parent_dir, "results/plots"),
     "the generate plots image dir")
 
 flags.DEFINE_string(
-    "polt_name", "plt_roc_test",
+    "plot_name", "plt_roc_spk-00298-0.99",
     "the roc image's name")
 
 flags.DEFINE_string(
-    "score_path", os.path.join(parent_dir, "4-roc_curve", "score.txt"),
-    "the score txt path")
+    "score_dir", os.path.join(parent_dir, "results/scores"),
+    "the score txt dir")
 
 
 def cal_rate(score_dict, thres):
@@ -60,9 +60,9 @@ def cal_rate(score_dict, thres):
     return accracy, precision, TPR, TNR, FNR, FPR
 
 
-def plot_roc(score_list, save_dir, polt_name):
+def plot_roc(score_list, save_dir, plot_name):
 
-    save_path = os.path.join(save_dir, polt_name + ".jpg")
+    save_path = os.path.join(save_dir, plot_name + ".jpg")
     # 按照 score 排序
     threshold_value = sorted([score for score, _ in score_list])
 
@@ -102,16 +102,15 @@ def plot_roc(score_list, save_dir, polt_name):
 def main(argv):
     score_list = []
 
-    with open(FLAGS.score_path, "r") as f:
+    with open(os.path.join(FLAGS.score_dir, "score.txt"), "r") as f:
         for line in f:
             score, label = line.split(" ")
             score_list.append([float(score), label.rstrip("\n")])
 
-    plot_roc(score_list, FLAGS.save_dir, FLAGS.polt_name)
+    plot_roc(score_list, FLAGS.save_plot_dir, FLAGS.plot_name)
 
     # os.path.join(parent_dir, "results/plots", "plt_roc_spk-00344-0.98.jpg")
 
 
 if __name__ == "__main__":
-
     app.run(main)
