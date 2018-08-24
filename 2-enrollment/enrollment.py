@@ -4,15 +4,20 @@
 # @Time     : 2018/8/22 14:27 
 # @Software : PyCharm
 import os
-import numpy as np
 from keras.models import load_model
 from tqdm import tqdm
-import pandas as pd
 from absl import flags, app
+import pandas as pd
+import numpy as np
+import sys
 
-FLAGS = flags.FLAGS
+sys.path.append("D:\\PythonProject\\speakerRecognition")
+from utils.csv_util import read_features
+
 
 parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
+
+FLAGS = flags.FLAGS
 
 flags.DEFINE_string(
     "data_dir", os.path.join(parent_dir, "data/enrollment_evalution"),
@@ -23,7 +28,7 @@ flags.DEFINE_string(
     "the save data dir")
 
 flags.DEFINE_string(
-    "weight_path", "D:\PythonProject\speakerRecognition\model\spk-00152-0.88.h5",
+    "weight_path", "D:\PythonProject\speakerRecognition\model\spk-00193-0.97.h5",
     "the model dir")
 
 flags.DEFINE_string(
@@ -118,14 +123,6 @@ def features2csv(save_dir, category, model, mean=True, sentence_nums=20):
     features_df = pd.DataFrame(people_list, columns=["label", "features_str"])
     df_save_path = os.path.join(save_dir, category + "_features.csv")
     features_df.to_csv(df_save_path, index=False, encoding="utf-8")
-
-
-def read_features(csv_dir, category):
-    csv_path = os.path.join(csv_dir, category + "_features.csv")
-    data = pd.read_csv(csv_path, encoding="utf-8")
-    data_list = data.values
-    for label, features in data_list:
-        yield label, list(map(float, features.split(",")))
 
 
 def main(argv):

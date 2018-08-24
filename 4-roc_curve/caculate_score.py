@@ -3,34 +3,18 @@
 # @File     : caculate_score.py
 # @Time     : 2018/8/22 17:50 
 # @Software : PyCharm
-
-import pandas as pd
 import numpy as np
 import os
 from absl import flags, app
 from tqdm import tqdm
+import sys
 
-parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
+sys.path.append("D:\\PythonProject\\speakerRecognition")
 
-FLAGS = flags.FLAGS
-
-flags.DEFINE_string(
-    "features_dir", default=os.path.join(parent_dir, "results/features"),
-    help="the dir of enrolllment")
-
-flags.DEFINE_string(
-    "score_dir", default=os.path.join(parent_dir, "results/scores"),
-    help="the dir of saving score")
+from utils.csv_util import read_features
 
 
-def read_features(csv_dir, category):
-    csv_path = os.path.join(csv_dir, category + "_features.csv")
-    data = pd.read_csv(csv_path, encoding="utf-8")
-    for label, features in data.values:
-        yield label, np.array(list(map(float, features.split(","))))
-
-
-def getCDS(a, b):
+def get_cds(a, b):
     """
     返回归一化后的余弦距离，得分CDS越接近1越好
     :param a: shape[1,-1]
@@ -45,6 +29,19 @@ def getCDS(a, b):
     return cds
 
 
+parent_dir = os.path.abspath(os.path.join(os.getcwd(), ".."))
+
+FLAGS = flags.FLAGS
+
+flags.DEFINE_string(
+    "features_dir", default=os.path.join(parent_dir, "results/features"),
+    help="the dir of enrolllment")
+
+flags.DEFINE_string(
+    "score_dir", default=os.path.join(parent_dir, "results/scores"),
+    help="the dir of saving score")
+
+
 def main(argv):
     validate_dict = read_features(FLAGS.features_dir, "validate")
     strange_dict = read_features(FLAGS.features_dir, "stranger")
@@ -53,7 +50,7 @@ def main(argv):
     with open(os.path.join(FLAGS.score_dir, "score.txt"), "w") as f:
         for val_label, val_feat in tqdm(validate_dict):
             enroll_dict = read_features(FLAGS.features_dir, "enroll")
-            distance = [getCDS(val_feat, enroll_feat) for _, enroll_feat in enroll_dict]
+            distance = [get_cds(val_feat, enroll_feat) for _, enroll_feat in enroll_dict]
             predict_label = np.argmax(distance, axis=0)
             line = str(distance[int(predict_label)]) + " "
             if predict_label == val_label:
@@ -64,7 +61,7 @@ def main(argv):
 
         for stranger_label, stranger_feat in tqdm(strange_dict):
             enroll_dict = read_features(FLAGS.features_dir, "enroll")
-            distance = [getCDS(stranger_feat, enroll_feat) for _, enroll_feat in enroll_dict]
+            distance = [get_cds(stranger_feat, enroll_feat) for _, enroll_feat in enroll_dict]
             predict_label = np.argmax(distance, axis=0)
             line = str(distance[int(predict_label)]) + " n\n"
             f.write(line)
