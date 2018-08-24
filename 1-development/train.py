@@ -77,8 +77,8 @@ f.close()
 if __name__ == '__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = "1"
     # tensorboard --logdir="logs/" --port=49652
-    # pid 7030
-    # nohup python3 -u  train.py --batch_size=128 --num_epochs=1000 --learn_rate=0.0001 --category="train" > logs.out 2>&1 &
+    # pid 26183
+    # nohup python3 -u  train.py --batch_size=256 --num_epochs=1000 --learn_rate=0.0001 --category="train" > logs.out 2>&1 &
     # python train.py --batch_size=32 --num_epochs=200 --num_classes=20 --category="test"
 
     config = tf.ConfigProto()
@@ -88,9 +88,11 @@ if __name__ == '__main__':
     # 创建模型
     extract_feature_model, sr_model = construct_model(FLAGS.num_classes)
 
+    # 创建优化器
     opt = Adam(lr=FLAGS.learn_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
     sr_model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
 
+    # 学习率衰减
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=10,
                                   min_lr=1e-7, mode="min", cooldown=5)
 
