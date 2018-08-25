@@ -18,9 +18,9 @@ from keras.models import Model
 def construct_model(classe_nums):
     model = Sequential()
 
-    model.add(Conv1D(filters=8, kernel_size=5, strides=2, activation='relu', input_shape=(11960, 1), name='block1_conv1'))
-    model.add(Conv1D(filters=8, kernel_size=3, strides=1, activation='relu', name='block1_conv2'))
-    model.add(AveragePooling1D(pool_size=2, name='block1_pool2'))
+    model.add(Conv1D(filters=128, kernel_size=3, strides=1, activation='relu', input_shape=(299, 40), name='block1_conv1'))
+    model.add(Conv1D(filters=128, kernel_size=5, strides=1, activation='relu', name='block1_conv2'))
+    model.add(MaxPool1D(pool_size=2, name='block1_pool2'))
     model.add(Dropout(0.5, name='block1_drop1'))
     model.add(Flatten(name='block1_flat1'))
 
@@ -35,7 +35,7 @@ def construct_model(classe_nums):
 
     # model.add(Lambda(lambda x: K.mean(x, axis=1), name="mean"))
 
-    model_input = Input(shape=(11960, 1))
+    model_input = Input(shape=(299, 40))
     features = model(model_input)
     extract_feature_model = Model(inputs=model_input, outputs=features)
 
@@ -44,3 +44,7 @@ def construct_model(classe_nums):
     sr_model = Model(inputs=model_input, outputs=category_predict)
 
     return extract_feature_model, sr_model
+
+
+if __name__ == "__main__":
+    extract_feature_model, sr_model = construct_model(classe_nums=340)

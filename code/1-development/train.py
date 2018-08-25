@@ -14,7 +14,7 @@ import numpy as np
 from model import construct_model
 from data_feeder import generate_fit
 
-parent_dir = os.path.abspath(os.path.join(os.getcwd(), "../../"))
+root_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
 
 tf.flags.DEFINE_integer(
     "batch_size", default=32,
@@ -37,15 +37,15 @@ tf.flags.DEFINE_string(
     help="the category of data")
 
 tf.flags.DEFINE_string(
-    "model_dir", default=os.path.join(parent_dir, "model"),
+    "model_dir", default=os.path.join(root_dir, "model"),
     help="the model file dir")
 
 tf.flags.DEFINE_string(
-    "tensorboard_dir", default=os.path.join(parent_dir, "logs"),
+    "tensorboard_dir", default=os.path.join(root_dir, "logs"),
     help="the tensorboard file dir")
 
 tf.flags.DEFINE_string(
-    "datalist_dir", default=os.path.join(parent_dir, "data/bin"),
+    "datalist_dir", default=os.path.join(root_dir, "data/bin"),
     help="the data list file dir")
 
 # FLAGS 是一个对象，保存了解析后的命令行参数
@@ -76,9 +76,10 @@ f.close()
 
 if __name__ == '__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+    # 最大池化效果好
     # tensorboard --logdir="logs/" --port=49652
-    # pid 26183
-    # nohup python3 -u  train.py --batch_size=256 --num_epochs=1000 --learn_rate=0.0001 --category="train" > logs.out 2>&1 &
+    # pid 8354
+    # nohup python3 -u  train.py --batch_size=128 --num_epochs=1000 --learn_rate=0.0001 --category="train" > logs.out 2>&1 &
     # python train.py --batch_size=32 --num_epochs=200 --num_classes=20 --category="test"
 
     config = tf.ConfigProto()
@@ -94,7 +95,7 @@ if __name__ == '__main__':
 
     # 学习率衰减
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=10,
-                                  min_lr=1e-7, mode="min", cooldown=5)
+                                  min_lr=1e-6, mode="min", cooldown=20)
 
     tbCallBack = TensorBoard(log_dir=FLAGS.tensorboard_dir,
                              histogram_freq=0,
