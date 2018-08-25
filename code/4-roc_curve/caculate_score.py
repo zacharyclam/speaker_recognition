@@ -7,12 +7,15 @@ import numpy as np
 import os
 from absl import flags, app
 from tqdm import tqdm
-import sys
-
-sys.path.append(os.getcwd())
-
-from ..utils.csv_util import read_features
-from ..utils.calculate_cds import get_cds
+try:
+    import sys
+    # 防止通过脚本运行时由于路径问题出现 ModuleNotFoundError
+    sys.path.append(os.path.join(os.getcwd(), "code"))
+    from utils.csv_util import read_features
+    from utils.calculate_cds import get_cds
+except ModuleNotFoundError:
+    from code.utils.csv_util import read_features
+    from code.utils.calculate_cds import get_cds
 
 
 parent_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))

@@ -9,9 +9,13 @@ from tqdm import tqdm
 from absl import flags
 from absl import app
 
-import sys
-sys.path.append(os.getcwd())
-from ..utils.csv_util import features2csv
+try:
+    import sys
+    # 防止通过脚本运行时由于路径问题出现 ModuleNotFoundError
+    sys.path.append(os.path.join(os.getcwd(), "code"))
+    from utils.csv_util import features2csv
+except ModuleNotFoundError:
+    from code.utils.csv_util import features2csv
 
 FLAGS = flags.FLAGS
 

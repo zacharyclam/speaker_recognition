@@ -8,12 +8,13 @@ from keras.models import load_model
 from tqdm import tqdm
 from absl import flags, app
 
-import sys
-# 防止通过脚本运行时由于路径问题出现 import utils error
-sys.path.append(os.getcwd())
-
-from ..utils.csv_util import features2csv
-
+try:
+    import sys
+    # 防止通过脚本运行时由于路径问题出现 ModuleNotFoundError
+    sys.path.append(os.path.join(os.getcwd(), "code"))
+    from utils.csv_util import features2csv
+except ModuleNotFoundError:
+    from code.utils.csv_util import features2csv
 
 parent_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
 
