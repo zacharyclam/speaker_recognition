@@ -11,7 +11,7 @@ from keras.callbacks import ModelCheckpoint, TensorBoard, ReduceLROnPlateau
 import keras.backend as K
 import numpy as np
 
-from model import construct_model
+from model import construct_model, construct_model_dnn
 from data_feeder import generate_fit
 
 root_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
@@ -63,14 +63,14 @@ if not os.path.exists(FLAGS.tensorboard_dir):
 # the paths
 cwd = os.getcwd()  # current working directory
 train_path = os.path.join(FLAGS.datalist_dir, "train_list.txt")  # train text path
-test_path = os.path.join(FLAGS.datalist_dir, "test_list.txt")
+test_path = os.path.join(FLAGS.datalist_dir, "validate_list.txt")
 
 # count the number of samples
 f = open(train_path)
 nTrain = len(f.readlines())  # number of train samples
 f.close()
 
-f = open(train_path)
+f = open(test_path)
 nTest = len(f.readlines())  # number of train samples
 f.close()
 
@@ -78,8 +78,8 @@ if __name__ == '__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = "1"
     # 最大池化效果好
     # tensorboard --logdir="logs/" --port=49652
-    # pid 8354
-    # nohup python3 -u  train.py --batch_size=128 --num_epochs=1000 --learn_rate=0.0001 --category="train" > logs.out 2>&1 &
+    # pid 31597
+    # nohup python3 -u  train.py --batch_size=128 --num_epochs=5000 --learn_rate=0.0001 --category="train" > logs.out 2>&1 &
     # python train.py --batch_size=32 --num_epochs=200 --num_classes=20 --category="test"
 
     config = tf.ConfigProto()
@@ -87,7 +87,7 @@ if __name__ == '__main__':
     K.set_session(tf.Session(config=config))
 
     # 创建模型
-    extract_feature_model, sr_model = construct_model(FLAGS.num_classes)
+    extract_feature_model, sr_model = construct_model_dnn(FLAGS.num_classes)
 
     # 创建优化器
     opt = Adam(lr=FLAGS.learn_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
@@ -102,10 +102,10 @@ if __name__ == '__main__':
                              write_graph=True,
                              write_images=True)
 
-    checkpoint = ModelCheckpoint(filepath=os.path.join(FLAGS.model_dir, "checkpoint-{epoch:05d}-{acc:.2f}.h5"),
+    checkpoint = ModelCheckpoint(filepath=os.path.join(FLAGS.model_dir, "checkpoint-{epoch:05d}-{val_acc:.2f}.h5"),
                                  monitor='val_acc', verbose=2, save_best_only=True, mode='max')
 
-    sr_model.fit_generator(generate_fit(train_path, FLAGS.batch_size, FLAGS.num_classes),
+    history = sr_model.fit_generator(generate_fit(train_path, FLAGS.batch_size, FLAGS.num_classes),
                            steps_per_epoch=np.ceil(nTrain / FLAGS.batch_size),
                            shuffle=True,
                            validation_data=generate_fit(test_path, FLAGS.batch_size, FLAGS.num_classes),
@@ -116,3 +116,32 @@ if __name__ == '__main__':
                            )
 
     extract_feature_model.save("spk.h5")
+
+    # 绘制曲线
+    import matplotlib.pyplot as plt
+    # list all data in history
+    print(history.keys())
+    # summarize history for accuracy
+    plt.plot(history['acc'])
+    plt.plot(history['val_acc'])
+    plt.title('model accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.show()
+    # summarize history for loss
+    plt.plot(history['loss'])
+    plt.plot(history['val_loss'])
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'test'], loc='upper left')
+    plt.show()
+
+    plt.plot(history['lr'])
+    plt.title('model loss')
+    plt.ylabel('learn rate')
+    plt.xlabel('epoch')
+    plt.legend(['learn rate'], loc='upper left')
+
+    plt.show()
