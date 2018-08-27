@@ -5,15 +5,15 @@
 # @Software : PyCharm
 from absl import flags, app
 
-from ..utils.process_wav import wav2fb
-from ..utils.split_data import split_data
+from code.utils.process_wav import wav2fb
+from code.utils.split_data import split_data
 
 FLAGS = flags.FLAGS
 
 
 flags.DEFINE_string("data_dir", "D:\PythonProject\speakerRecognition\data", "")
 flags.DEFINE_string("save_dir", "D:\PythonProject\speakerRecognition\data\enrollment_evalution", "")
-flags.DEFINE_string("category", "test", "the category of data")
+flags.DEFINE_string("category", "dev", "the category of data")
 
 
 def main(argv):

@@ -3,7 +3,7 @@ import os
 from keras.models import load_model
 import time
 
-from get_log_fbank import get_log_fbank
+from code.utils.process_wav import get_log_fbank
 
 
 def split_data(data_dir, usage, enroll_sentence_nums=20, val_sentence_nums=100):
@@ -63,7 +63,7 @@ def get_features(model, data_tuple, mean=True):
     fearures = []
     for filelist, label in data_tuple:
         # 读取 wav 文件 并提取fbank特征
-        fb_input = [get_log_fbank(bin_path).reshape((11960, 1)) for bin_path in filelist]
+        fb_input = [get_log_fbank(bin_path).reshape((299, 40)) for bin_path in filelist]
         # for bin_path in filelist:
         #     fbank = get_log_fbank(bin_path).reshape((11960, 1))
         #     sepX = [fbank[i:i + 100].flatten() for i in range(0, 199, 20)]
@@ -111,7 +111,7 @@ def confusion_matrix_test(data_dir, usage, weight_path, predict_path, enroll_sen
 if __name__ == "__main__":
     data_dir = "data"
     usage = "dev"
-    weight_path = "D:\PythonProject\speakerRecognition\spk_eer.h5"
+    weight_path = "D:\PythonProject\speakerRecognition\model\spk-00106-0.99.h5"
     predict_path = "predict.txt"
     enroll_sentence_nums = 20
     val_sentence_nums = 100

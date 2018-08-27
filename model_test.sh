@@ -1,5 +1,5 @@
 # the enrolled data dir
-data_dir="data/enrollment_evalution"
+data_dir="./data/enrollment_evalution"
 
 # save result dir
 save_dir="./results/features"
@@ -23,7 +23,7 @@ plot_name="plt_roc_spk-"$postfix_name
 score_dir="./results/scores"
 
 # the polt image save dir
-save_plot_dir="results/plots"
+save_plot_dir="./results/plots"
 
 # the enroll sentence nums
 enroll_sentence_nums=20

@@ -5,8 +5,16 @@
 # @Software : PyCharm
 from absl import app, flags
 
-from code.utils.process_wav import wav2fb
-from code.utils.split_data import split_data
+try:
+    from code.utils.process_wav import wav2fb
+    from code.utils.split_data import split_data
+except ImportError:
+    # ubuntu 下运行会出现 ImportError
+    import sys
+    import os
+    sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "..")))
+    from utils.process_wav import wav2fb
+    from utils.split_data import split_data
 
 FLAGS = flags.FLAGS
 
@@ -26,6 +34,7 @@ if __name__ == "__main__":
     app.run(main)
 
     # usage
-    # 26841
-    # nohup python3 -u process_data.py --data_dir="../../../untar_data/" --save_dir="../../data/bin" --category="train" > logs.out 2>&1 &
+    # 27043
+    # nohup python3 -u process_data.py --data_dir="../../../../untar_data/" --save_dir="../../data/bin" --category="train" > logs.out 2>&1 &
+
     # python process_data.py --data_dir="data/" --save_dir="data/bin" --category="dev"

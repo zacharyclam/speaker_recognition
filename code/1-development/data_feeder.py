@@ -28,6 +28,7 @@ def generate_fit(path, batch_size, classe_nums):
         data_list = np.array(data_list)[index, :]
         for bin_path, label in data_list:
             x = np.fromfile(bin_path, dtype=np.float).reshape((299, 40))
+            # x = np.fromfile(bin_path, dtype=np.float)
             X.append(x)
             Y.append(label)
 

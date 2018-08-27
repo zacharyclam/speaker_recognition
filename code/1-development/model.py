@@ -21,25 +21,19 @@ def construct_model(classe_nums):
     model.add(Conv1D(filters=128, kernel_size=3, strides=1, activation='relu', input_shape=(299, 40), name='block1_conv1'))
     model.add(MaxPool1D(pool_size=2, name='block1_pool1'))
     model.add(BatchNormalization(momentum=0.9, epsilon=1e-5, axis=1))
-    model.add(Dropout(0.5, name='block1_drop1'))
-
-    model.add(BatchNormalization(momentum=0.9, epsilon=1e-5, axis=1))
     model.add(Conv1D(filters=256, kernel_size=3, strides=1, activation='relu', name='block1_conv2'))
     model.add(MaxPool1D(pool_size=2, name='block1_pool2'))
-    model.add(Dropout(0.5, name='block1_drop2'))
 
     model.add(Flatten(name='block1_flat1'))
+    model.add(Dropout(0.5, name='block1_drop1'))
 
-    model.add(Dense(512, activation='relu', name='block2_dense1', kernel_regularizer=l2(1e-3)))
-    model.add(MaxoutDense(512, nb_feature=4, name="block2_maxout1"))
-    # 增加 BN层后过拟合严重
-    #     model.add(BatchNormalization(momentum=0.9, epsilon=1e-5)
-    model.add(Dropout(0.5, name='block2_drop3'))
-
-    model.add(Dense(512, activation='relu', name='block2_dense2', kernel_regularizer=l2(1e-3)))
+    model.add(Dense(512, activation='relu', name='block2_dense2'))
     model.add(MaxoutDense(512, nb_feature=4, name="block2_maxout2"))
-    #     model.add(BatchNormalization(momentum=0.9, epsilon=1e-5))
-    model.add(Dropout(0.5, name='block2_drop4'))
+    model.add(Dropout(0.5, name='block2_drop2'))
+    model.add(Dense(512, activation='relu', name='block2_dense3', kernel_regularizer=l2(1e-4)))
+    model.add(MaxoutDense(512, nb_feature=4, name="block2_maxout3"))
+
+    model.summary()
 
     model_input = Input(shape=(299, 40))
     features = model(model_input)

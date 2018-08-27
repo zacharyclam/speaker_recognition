@@ -26,14 +26,14 @@ flags.DEFINE_string(
     "the enrolled data dir")
 
 flags.DEFINE_string(
-    "weight_path", "D:\PythonProject\speakerRecognition\model\spk-00152-0.88.h5",
+    "weight_path", "D:\PythonProject\speakerRecognition\model\spk-01000-1.00.h5",
     "the model dir")
 
 flags.DEFINE_string(
     "category", "test", "the category of data")
 
 flags.DEFINE_string(
-    "save_dir", os.path.join(parent_dir, "3-evalution"),
+    "save_dir", os.path.join(parent_dir, "results/features"),
     "the strangers' features save dir")
 
 flags.DEFINE_integer(
@@ -72,7 +72,6 @@ def split_data(data_dir, save_dir, usage, sentence_nums=20):
 
 def main(argv):
     model = load_model(FLAGS.weight_path)
-
     # 分割 陌生人 数据集 并写入txt
     split_data(FLAGS.data_dir, FLAGS.save_dir, FLAGS.category, sentence_nums=FLAGS.stranger_sentence_nums)
 

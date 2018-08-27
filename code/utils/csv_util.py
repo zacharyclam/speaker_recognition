@@ -34,12 +34,13 @@ def features2csv(save_dir, category, model, mean=True, sentence_nums=20):
         cnt = 0
         for line in tqdm(f):
             bin_path, label = line.split(" ")
-            fbank = np.fromfile(bin_path, dtype=np.float)
+            fbank = np.fromfile(bin_path, dtype=np.float).reshape((299, 40))
+            # fbank = np.fromfile(bin_path, dtype=np.float)
             fbank_list.append(fbank)
 
             cnt += 1
             if cnt % sentence_nums == 0:
-                features = caculate_features(np.array(fbank_list)[:, :, np.newaxis])
+                features = caculate_features(np.array(fbank_list))
                 cnt = 0
                 fbank_list = []
                 if mean is True:

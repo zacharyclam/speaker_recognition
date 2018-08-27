@@ -53,7 +53,6 @@ FLAGS = tf.flags.FLAGS
 # 进行解析
 FLAGS.flag_values_dict()
 
-
 if not os.path.exists(FLAGS.model_dir):
     os.makedirs(FLAGS.model_dir)
 
@@ -78,8 +77,8 @@ if __name__ == '__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = "1"
     # 最大池化效果好
     # tensorboard --logdir="logs/" --port=49652
-    # pid 31597
-    # nohup python3 -u  train.py --batch_size=128 --num_epochs=5000 --learn_rate=0.0001 --category="train" > logs.out 2>&1 &
+    # pid 19290
+    # nohup python3 -u  train.py --batch_size=128 --num_epochs=1000 --learn_rate=0.0001 --category="train" > logs.out 2>&1 &
     # python train.py --batch_size=32 --num_epochs=200 --num_classes=20 --category="test"
 
     config = tf.ConfigProto()
@@ -87,15 +86,15 @@ if __name__ == '__main__':
     K.set_session(tf.Session(config=config))
 
     # 创建模型
-    extract_feature_model, sr_model = construct_model_dnn(FLAGS.num_classes)
+    extract_feature_model, sr_model = construct_model(FLAGS.num_classes)
 
     # 创建优化器
     opt = Adam(lr=FLAGS.learn_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
     sr_model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
 
     # 学习率衰减
-    reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=10,
-                                  min_lr=1e-6, mode="min", cooldown=20)
+    reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=10,
+                                  min_lr=1e-8, mode="min", cooldown=20)
 
     tbCallBack = TensorBoard(log_dir=FLAGS.tensorboard_dir,
                              histogram_freq=0,
@@ -106,21 +105,23 @@ if __name__ == '__main__':
                                  monitor='val_acc', verbose=2, save_best_only=True, mode='max')
 
     history = sr_model.fit_generator(generate_fit(train_path, FLAGS.batch_size, FLAGS.num_classes),
-                           steps_per_epoch=np.ceil(nTrain / FLAGS.batch_size),
-                           shuffle=True,
-                           validation_data=generate_fit(test_path, FLAGS.batch_size, FLAGS.num_classes),
-                           validation_steps=np.ceil(nTest / FLAGS.batch_size),
-                           epochs=FLAGS.num_epochs,
-                           verbose=2,
-                           callbacks=[reduce_lr, checkpoint, tbCallBack]
-                           )
+                                     steps_per_epoch=np.ceil(nTrain / FLAGS.batch_size),
+                                     shuffle=True,
+                                     validation_data=generate_fit(test_path, FLAGS.batch_size, FLAGS.num_classes),
+                                     validation_steps=np.ceil(nTest / FLAGS.batch_size),
+                                     epochs=FLAGS.num_epochs,
+                                     verbose=2,
+                                     callbacks=[reduce_lr, checkpoint, tbCallBack]
+                                     )
 
     extract_feature_model.save("spk.h5")
 
     # 绘制曲线
     import matplotlib.pyplot as plt
+
+    result_path = os.path.join(os.path.abspath(os.path.join(os.getcwd(), "..")), "plots")
+
     # list all data in history
-    print(history.keys())
     # summarize history for accuracy
     plt.plot(history['acc'])
     plt.plot(history['val_acc'])
@@ -128,6 +129,7 @@ if __name__ == '__main__':
     plt.ylabel('accuracy')
     plt.xlabel('epoch')
     plt.legend(['train', 'test'], loc='upper left')
+    plt.savefig(os.path.join(result_path, "acc.jpg"))
     plt.show()
     # summarize history for loss
     plt.plot(history['loss'])
@@ -136,6 +138,7 @@ if __name__ == '__main__':
     plt.ylabel('loss')
     plt.xlabel('epoch')
     plt.legend(['train', 'test'], loc='upper left')
+    plt.savefig(os.path.join(result_path, "loss.jpg"))
     plt.show()
 
     plt.plot(history['lr'])
@@ -143,5 +146,5 @@ if __name__ == '__main__':
     plt.ylabel('learn rate')
     plt.xlabel('epoch')
     plt.legend(['learn rate'], loc='upper left')
-
+    plt.savefig(os.path.join(result_path, "lr.jpg"))
     plt.show()

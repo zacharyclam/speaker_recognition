@@ -45,5 +45,5 @@ def main(argv):
 if __name__ == "__main__":
     app.run(main)
     # usage
-    # python3 get_data_list.py --save_dir="../data/bin/" --category="validate"
-    # python get_data_list.py --save_dir="../data/bin/" --category="train"
+    # python3 get_data_list.py --save_dir="../../data/bin/" --category="validate"
+    # python3 get_data_list.py --save_dir="../../data/bin/" --category="train"

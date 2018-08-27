@@ -17,7 +17,7 @@ flags.DEFINE_string(
     "the generate plots image dir")
 
 flags.DEFINE_string(
-    "plot_name", "plt_roc_spk-00298-0.99",
+    "plot_name", "plt_roc_spk-01000-0.99",
     "the roc image's name")
 
 flags.DEFINE_string(
@@ -93,7 +93,7 @@ def plot_roc(score_list, save_dir, plot_name):
     plt.title('ROC')
     plt.xlabel('FPR')
     plt.ylabel('TPR')
-    plt.text(0.4, 0, s="EER :{} AUC :{}".format(round(EER, 2), round(-AUC, 2)), fontsize=10)
+    plt.text(0.2, 0, s="EER :{} AUC :{} Threshold:{}".format(round(EER, 4), round(-AUC, 4), round(threshold_value[threshold], 4)), fontsize=10)
     plt.legend()
     plt.savefig(save_path)
     plt.show()
@@ -102,7 +102,7 @@ def plot_roc(score_list, save_dir, plot_name):
 def main(argv):
     score_list = []
 
-    with open(os.path.join(FLAGS.score_dir, "score.txt"), "r") as f:
+    with open(os.path.join(FLAGS.score_dir, "D:\\PythonProject\\speakerRecognition\\results\\scores\\score.txt"), "r") as f:
         for line in f:
             score, label = line.split(" ")
             score_list.append([float(score), label.rstrip("\n")])

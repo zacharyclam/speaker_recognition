@@ -29,7 +29,7 @@ flags.DEFINE_string(
     "the save data dir")
 
 flags.DEFINE_string(
-    "weight_path", "D:\PythonProject\speakerRecognition\model\spk-00193-0.97.h5",
+    "weight_path", "D:\PythonProject\speakerRecognition\model\spk-01000-1.00.h5",
     "the model dir")
 
 flags.DEFINE_string(
