@@ -8,6 +8,7 @@ import os
 from absl import flags, app
 
 
+root_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
 FLAGS = flags.FLAGS
 
 
@@ -33,8 +34,8 @@ def get_list(save_dir, category):
                 f.write(line)
 
 
-flags.DEFINE_string("save_dir", "../,,/data/bin/", "save list to dir")
-flags.DEFINE_string("category", "validate", "the category of data")
+flags.DEFINE_string("save_dir", os.path.join(root_dir, "data/bin/"), "save list to dir")
+flags.DEFINE_string("category", "train", "the category of data")
 
 
 def main(argv):
