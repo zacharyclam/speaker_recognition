@@ -3,13 +3,8 @@
 # @File     : tvlistProduce.py
 # @Time     : 2018/8/12 12:09 
 # @Software : PyCharm
-
 import os
 from absl import flags, app
-
-
-root_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
-FLAGS = flags.FLAGS
 
 
 def get_list(save_dir, category):
@@ -33,6 +28,9 @@ def get_list(save_dir, category):
                 line = os.path.join(subpath, filename) + " " + str(i) + "\n"
                 f.write(line)
 
+
+root_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
+FLAGS = flags.FLAGS
 
 flags.DEFINE_string("save_dir", os.path.join(root_dir, "data/bin/"), "save list to dir")
 flags.DEFINE_string("category", "train", "the category of data")

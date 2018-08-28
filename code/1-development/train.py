@@ -11,14 +11,14 @@ from keras.callbacks import ModelCheckpoint, TensorBoard, ReduceLROnPlateau
 import keras.backend as K
 import numpy as np
 
-from model import construct_model, construct_model_dnn
+from model import construct_model
 from data_feeder import generate_fit
 
 root_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
 
 tf.flags.DEFINE_integer(
-    "batch_size", default=32,
-    help="Batch size (default: 32)")
+    "batch_size", default=128,
+    help="Batch size (default: 128)")
 
 tf.flags.DEFINE_integer(
     "num_epochs", default=100,
@@ -66,19 +66,19 @@ test_path = os.path.join(FLAGS.datalist_dir, "validate_list.txt")
 
 # count the number of samples
 f = open(train_path)
-nTrain = len(f.readlines())  # number of train samples
+train_nums = len(f.readlines())  # number of train samples
 f.close()
 
 f = open(test_path)
-nTest = len(f.readlines())  # number of train samples
+test_nums = len(f.readlines())  # number of train samples
 f.close()
 
 if __name__ == '__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = "1"
     # 最大池化效果好
     # tensorboard --logdir="logs/" --port=49652
-    # pid 19290
-    # nohup python3 -u  train.py --batch_size=128 --num_epochs=1000 --learn_rate=0.0001 --category="train" > logs.out 2>&1 &
+    # pid 39025
+    # nohup python3 -u  train.py --batch_size=128 --num_epochs=500 --learn_rate=0.0001 --category="train" > logs.out 2>&1 &
     # python train.py --batch_size=32 --num_epochs=200 --num_classes=20 --category="test"
 
     config = tf.ConfigProto()
@@ -104,17 +104,18 @@ if __name__ == '__main__':
     checkpoint = ModelCheckpoint(filepath=os.path.join(FLAGS.model_dir, "checkpoint-{epoch:05d}-{val_acc:.2f}.h5"),
                                  monitor='val_acc', verbose=2, save_best_only=True, mode='max')
 
-    history = sr_model.fit_generator(generate_fit(train_path, FLAGS.batch_size, FLAGS.num_classes),
-                                     steps_per_epoch=np.ceil(nTrain / FLAGS.batch_size),
-                                     shuffle=True,
-                                     validation_data=generate_fit(test_path, FLAGS.batch_size, FLAGS.num_classes),
-                                     validation_steps=np.ceil(nTest / FLAGS.batch_size),
-                                     epochs=FLAGS.num_epochs,
-                                     verbose=2,
-                                     callbacks=[reduce_lr, checkpoint, tbCallBack]
-                                     )
+    sr_model.fit_generator(generate_fit(train_path, FLAGS.batch_size, FLAGS.num_classes),
+                           steps_per_epoch=np.ceil(train_nums / FLAGS.batch_size),
+                           shuffle=True,
+                           validation_data=generate_fit(test_path, FLAGS.batch_size, FLAGS.num_classes),
+                           validation_steps=np.ceil(test_nums / FLAGS.batch_size),
+                           epochs=FLAGS.num_epochs,
+                           verbose=2,
+                           callbacks=[reduce_lr, checkpoint, tbCallBack]
+                           )
 
-    extract_feature_model.save("spk.h5")
+    sr_model.save("spk.h5")
+    history = sr_model.history
 
     # 绘制曲线
     import matplotlib.pyplot as plt

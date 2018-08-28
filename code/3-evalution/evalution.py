@@ -5,10 +5,7 @@
 # @Software : PyCharm
 import os
 from keras.models import load_model
-from tqdm import tqdm
-from absl import flags
-from absl import app
-
+from absl import flags, app
 try:
     import sys
     # 防止通过脚本运行时由于路径问题出现 ModuleNotFoundError
@@ -16,29 +13,6 @@ try:
     from utils.csv_util import features2csv
 except ModuleNotFoundError:
     from code.utils.csv_util import features2csv
-
-FLAGS = flags.FLAGS
-
-parent_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
-
-flags.DEFINE_string(
-    "data_dir", os.path.join(parent_dir, "data/enrollment_evalution"),
-    "the enrolled data dir")
-
-flags.DEFINE_string(
-    "weight_path", "D:\PythonProject\speakerRecognition\model\spk-01000-1.00.h5",
-    "the model dir")
-
-flags.DEFINE_string(
-    "category", "test", "the category of data")
-
-flags.DEFINE_string(
-    "save_dir", os.path.join(parent_dir, "results/features"),
-    "the strangers' features save dir")
-
-flags.DEFINE_integer(
-    "stranger_sentence_nums", 100,
-    "the stranger sentence nums")
 
 
 def split_data(data_dir, save_dir, usage, sentence_nums=20):
@@ -64,13 +38,40 @@ def split_data(data_dir, save_dir, usage, sentence_nums=20):
         stranger_list.append((file_list[:sentence_nums], i))
 
     with open(os.path.join(save_dir, "stranger_list.txt"), "w") as f:
-        for (file_list, label) in tqdm(stranger_list):
+        for (file_list, label) in stranger_list:
             for file in file_list:
                 line = file + " " + str(label).zfill(4) + "\n"
                 f.write(line)
 
 
+FLAGS = flags.FLAGS
+
+root_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
+
+flags.DEFINE_string(
+    "data_dir", os.path.join(root_dir, "data/enrollment_evalution"),
+    "the enrolled data dir")
+
+flags.DEFINE_string(
+    "weight_path", os.path.join(root_dir, "model/spk-01000-1.00.h5"),
+    "the model dir")
+
+flags.DEFINE_string(
+    "category", "test", "the category of data")
+
+flags.DEFINE_string(
+    "save_dir", os.path.join(root_dir, "results/features"),
+    "the strangers' features save dir")
+
+flags.DEFINE_integer(
+    "stranger_sentence_nums", 100,
+    "the stranger sentence nums")
+
+
 def main(argv):
+    if not os.path.exists(FLAGS.save_dir):
+        os.makedirs(FLAGS.save_dir)
+    # 导入预测模型权重
     model = load_model(FLAGS.weight_path)
     # 分割 陌生人 数据集 并写入txt
     split_data(FLAGS.data_dir, FLAGS.save_dir, FLAGS.category, sentence_nums=FLAGS.stranger_sentence_nums)
@@ -78,9 +79,6 @@ def main(argv):
     # 将陌生人的注册语句特征写入csv文件
     features2csv(FLAGS.save_dir, "stranger", model, mean=False,
                  sentence_nums=FLAGS.stranger_sentence_nums)
-
-    # 读取陌生人特征信息
-    # enroll_features = read_features(FLAGS.save_dir, "stranger")
 
 
 if __name__ == "__main__":

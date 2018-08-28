@@ -32,6 +32,11 @@ flags.DEFINE_string(
 
 
 def main(argv):
+    if not os.path.exists(FLAGS.features_dir):
+        os.makedirs(FLAGS.features_dir)
+    if not os.path.exists(FLAGS.score_dir):
+        os.makedirs(FLAGS.score_dir)
+    # 读取特征向量
     validate_dict = read_features(FLAGS.features_dir, "validate")
     strange_dict = read_features(FLAGS.features_dir, "stranger")
 

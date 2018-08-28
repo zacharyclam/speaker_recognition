@@ -12,7 +12,6 @@ import re
 
 
 def get_log_fbank(wavname, winlen=0.025, winstep=0.01, nfilt=40):
-    # rate, sig = wav.read(wavname)
     sig, rate = librosa.load(wavname, sr=16000)
     # 归一化 (-1,1)
     try:
@@ -68,8 +67,3 @@ if __name__ == '__main__':
     feat = get_log_fbank(wavname)
     print(feat)
     print(feat.shape)
-    # train_wavs = "data/train/S0601"
-    # file_list = os.listdir(train_wavs)
-    # for file in file_list:
-    #     feat = get_log_fbank(os.path.join(train_wavs,file))
-    #     print(feat.shape)

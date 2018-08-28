@@ -46,6 +46,7 @@ def features2csv(save_dir, category, model, mean=True, sentence_nums=20):
                 if mean is True:
                     people_list.append((label.rstrip("\n"), ",".join(str(feat) for feat in features)))
                 else:
+                    # 不对特征向量求均值
                     for feature in features:
                         people_list.append((label.rstrip("\n"), ",".join(str(feat) for feat in feature)))
 
@@ -56,8 +57,14 @@ def features2csv(save_dir, category, model, mean=True, sentence_nums=20):
 
 
 def read_features(csv_dir, category):
+    """
+
+    :param csv_dir:
+    :param category:
+    :return:  label, features array
+    """
     csv_path = os.path.join(csv_dir, category + "_features.csv")
+    # 读取文件
     data = pd.read_csv(csv_path, encoding="utf-8")
-    data_list = data.values
-    for label, features in data_list:
+    for label, features in data.values:
         yield label, np.array(list(map(float, features.split(","))))

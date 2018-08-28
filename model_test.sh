@@ -34,7 +34,7 @@ val_sentence_nums=100
 # the stranger sentence nums
 stranger_sentence_nums=100
 
-python -u ./sep_model_weight.py --checkpoint_path=$checkpoint_path --model_save_path=$weight_path
+python -u ./code/utils/sep_model_weight.py --checkpoint_path=$checkpoint_path --model_save_path=$weight_path
 echo "模型权重导出完成"
 
 python -u ./code/2-enrollment/enrollment.py --data_dir=$data_dir --save_dir=$save_dir -weight_path=$weight_path \

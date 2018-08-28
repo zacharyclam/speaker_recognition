@@ -5,9 +5,7 @@
 # @Software : PyCharm
 import os
 from keras.models import load_model
-from tqdm import tqdm
 from absl import flags, app
-
 try:
     import sys
     # 防止通过脚本运行时由于路径问题出现 ModuleNotFoundError
@@ -69,19 +67,22 @@ def split_sentences(data_dir, save_dir, usage, enroll_sentence_nums=20, val_sent
         val_list.append((file_list[enroll_sentence_nums:enroll_sentence_nums + val_sentence_nums], i))
 
     with open(os.path.join(save_dir, "enroll_list.txt"), "w") as f:
-        for (file_list, label) in tqdm(enroll_list):
+        for (file_list, label) in enroll_list:
             for file in file_list:
                 line = file + " " + str(label).zfill(4) + "\n"
                 f.write(line)
 
     with open(os.path.join(save_dir, "validate_list.txt"), "w") as f:
-        for (file_list, label) in tqdm(val_list):
+        for (file_list, label) in val_list:
             for file in file_list:
                 line = file + " " + str(label).zfill(4) + "\n"
                 f.write(line)
 
 
 def main(argv):
+    if not os.path.exists(FLAGS.save_dir):
+        os.makedirs(FLAGS.save_dir)
+    # 导入预测模型权重
     model = load_model(FLAGS.weight_path)
     # 分割 注册人 数据集 并写入txt
     split_sentences(FLAGS.data_dir, FLAGS.save_dir, FLAGS.category, enroll_sentence_nums=FLAGS.enroll_sentence_nums,

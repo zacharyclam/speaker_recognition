@@ -4,6 +4,7 @@ from keras.models import load_model
 import time
 
 from code.utils.process_wav import get_log_fbank
+from code.utils.calculate_cds import get_cds
 
 
 def split_data(data_dir, usage, enroll_sentence_nums=20, val_sentence_nums=100):
@@ -32,21 +33,6 @@ def split_data(data_dir, usage, enroll_sentence_nums=20, val_sentence_nums=100):
         val_tuple.append((file_list[enroll_sentence_nums:enroll_sentence_nums + val_sentence_nums], i))
 
     return enroll_tuple, val_tuple
-
-
-def getCDS(a, b):
-    """
-    返回归一化后的余弦距离，得分CDS越接近1越好
-    :param a: shape[1,-1]
-    :param b: shape[1, -1]
-    :return:
-    """
-
-    num = float(a.dot(b.T))
-    denom = np.linalg.norm(a) * np.linalg.norm(b)
-    cds = num / denom  # 余弦值
-    cds = 0.5 + 0.5 * cds  # 归一化
-    return cds
 
 
 def get_features(model, data_tuple, mean=True):
@@ -94,7 +80,7 @@ def confusion_matrix_test(data_dir, usage, weight_path, predict_path, enroll_sen
 
     for idx, val_features in enumerate(val_people):
         for val_feat in val_features:
-            predict_list = [getCDS(val_feat, reg) for reg in enroll_people]
+            predict_list = [get_cds(val_feat, reg) for reg in enroll_people]
             predict_label = np.argmax(predict_list)
             confusion_matrix[idx][predict_label] += 1
 

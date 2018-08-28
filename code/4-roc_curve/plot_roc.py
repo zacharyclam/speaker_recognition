@@ -8,22 +8,6 @@ import numpy as np
 import matplotlib.pylab as plt
 from absl import app, flags
 
-FLAGS = flags.FLAGS
-
-parent_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
-
-flags.DEFINE_string(
-    "save_plot_dir", os.path.join(parent_dir, "results/plots"),
-    "the generate plots image dir")
-
-flags.DEFINE_string(
-    "plot_name", "plt_roc_spk-01000-0.99",
-    "the roc image's name")
-
-flags.DEFINE_string(
-    "score_dir", os.path.join(parent_dir, "results/scores"),
-    "the score txt dir")
-
 
 def cal_rate(score_dict, thres):
     all_number = len(score_dict)
@@ -33,10 +17,9 @@ def cal_rate(score_dict, thres):
     FN = 0
     TN = 0
     for score, label in score_dict:
-        disease = score
-        if disease >= thres:
-            disease = 1
-        if disease == 1:
+        if score >= thres:
+            score = 1
+        if score == 1:
             if label == "tp":
                 TP += 1
             else:
@@ -93,23 +76,43 @@ def plot_roc(score_list, save_dir, plot_name):
     plt.title('ROC')
     plt.xlabel('FPR')
     plt.ylabel('TPR')
-    plt.text(0.2, 0, s="EER :{} AUC :{} Threshold:{}".format(round(EER, 4), round(-AUC, 4), round(threshold_value[threshold], 4)), fontsize=10)
+    plt.text(0.2, 0, s="EER :{} AUC :{} Threshold:{}".format(round(EER, 4), round(-AUC, 4),
+                                                             round(threshold_value[threshold], 4)), fontsize=10)
     plt.legend()
     plt.savefig(save_path)
     plt.show()
 
 
-def main(argv):
-    score_list = []
+FLAGS = flags.FLAGS
+root_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
 
-    with open(os.path.join(FLAGS.score_dir, "D:\\PythonProject\\speakerRecognition\\results\\scores\\score.txt"), "r") as f:
+flags.DEFINE_string(
+    "save_plot_dir", os.path.join(root_dir, "results/plots"),
+    "the generate plots image dir")
+
+flags.DEFINE_string(
+    "plot_name", "plt_roc_spk-01000-0.99",
+    "the roc image's name")
+
+flags.DEFINE_string(
+    "score_dir", os.path.join(root_dir, "results/scores"),
+    "the score txt dir")
+
+
+def main(argv):
+
+    if not os.path.exists(FLAGS.save_plot_dir):
+        os.makedirs(FLAGS.save_plot_dir)
+    if not os.path.exists(FLAGS.score_dir):
+        os.makedirs(FLAGS.score_dir)
+    score_list = []
+    # 读取 score 数据文件
+    with open(os.path.join(FLAGS.score_dir, "score.txt"), "r") as f:
         for line in f:
             score, label = line.split(" ")
             score_list.append([float(score), label.rstrip("\n")])
-
+    # 绘制 ROC 曲线
     plot_roc(score_list, FLAGS.save_plot_dir, FLAGS.plot_name)
-
-    # os.path.join(parent_dir, "results/plots", "plt_roc_spk-00344-0.98.jpg")
 
 
 if __name__ == "__main__":
