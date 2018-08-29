@@ -19,16 +19,13 @@ def get_log_fbank(wavname, winlen=0.025, winstep=0.01, nfilt=40):
     except ValueError:
         # 读取文件为空
         return None
-    sig = sig.tolist()
-    # 将音频裁剪至3s
-    if len(sig) > 3 * rate:
-        sig = sig[:3 * rate]
-    else:
-        while len(sig) < 3 * rate:
-            sig.append(0)
     sig = np.array(sig)
+    section_nums = len(sig) // rate
+    # 将音频切分为1秒1段
+    audio_list = [sig[partition * rate:(partition + 1)*rate]for partition in range(section_nums)]
+
     try:
-        feat = logfbank(sig, rate, winlen=winlen, winstep=winstep, nfilt=nfilt)
+        feat = [logfbank(audio, rate, winlen=winlen, winstep=winstep, nfilt=nfilt) for audio in audio_list]
     except IndexError:
         return None
     # (N,40)
@@ -55,15 +52,27 @@ def wav2fb(data_list, save_dir, usage):
             os.makedirs(sub_dir)
         for wpath in fileList:
             # 计算 fbank 特征
-            fbank_feat = get_log_fbank(wpath)
-            if fbank_feat is not None:
+            fbank_feats = get_log_fbank(wpath)
+            if fbank_feats is not None:
                 file_name = re.search(r"B\S+", wpath).group(0)[:-4]
-                fbank_feat.tofile(os.path.join(sub_dir, file_name + ".bin"))
+                for idx, fbank in enumerate(fbank_feats):
+                    fbank.tofile(os.path.join(sub_dir, file_name + "_{}.bin".format(idx)))
 
 
 if __name__ == '__main__':
-    wavname = "data/train/S0601/BAC009S0601W0324.wav"
+    wavname = "D:\\PythonProject\\speakerRecognition\\data\\train\\S0002\\BAC009S0002W0122.wav"
 
     feat = get_log_fbank(wavname)
     print(feat)
-    print(feat.shape)
+    for f in feat:
+        print(f.shape)
+
+
+    # from split_data import split_data
+    # root_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
+    #
+    # data_dir = os.path.join(root_dir, "data")
+    # category = "vad_data"
+    # save_dir = os.path.join(root_dir, "data/vad_bin")
+    # train_list, validate_list = split_data(data_dir, category, split_scale=0.05)
+    # wav2fb(train_list, save_dir, "train")

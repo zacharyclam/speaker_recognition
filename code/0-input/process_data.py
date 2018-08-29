@@ -20,7 +20,7 @@ root_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
 
 FLAGS = flags.FLAGS
 
-flags.DEFINE_string("data_dir", os.path.join(root_dir, "data"), "")
+flags.DEFINE_string("data_dir", os.path.join(root_dir, "data/vad_data"), "")
 flags.DEFINE_string("save_dir", os.path.join(root_dir, "data/bin"), "")
 flags.DEFINE_string("category", "test", help="the category of data")
 flags.DEFINE_float("validata_scale", 0.05, "the scale os validate data")
@@ -37,5 +37,5 @@ def main(argv):
 if __name__ == "__main__":
     app.run(main)
     # usage
-    # nohup python3 -u process_data.py --data_dir="../../../../untar_data/" --save_dir="../../data/bin"  \
-    # --category="train" > logs.out 2>&1 &
+    # 18587
+    # nohup python3 -u process_data.py --data_dir="../../../../untar_data/" --save_dir="../../data/bin" --category="train" > logs.out 2>&1 &

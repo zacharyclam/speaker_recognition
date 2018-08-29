@@ -11,7 +11,7 @@ from keras.callbacks import ModelCheckpoint, TensorBoard, ReduceLROnPlateau
 import keras.backend as K
 import numpy as np
 
-from model import construct_model
+from model import construct_model, construct_model_dnn
 from data_feeder import generate_fit
 
 root_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
@@ -77,16 +77,17 @@ if __name__ == '__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = "1"
     # 最大池化效果好
     # tensorboard --logdir="logs/" --port=49652
-    # pid 39025
-    # nohup python3 -u  train.py --batch_size=128 --num_epochs=500 --learn_rate=0.0001 --category="train" > logs.out 2>&1 &
+    # pid 37234
+    # nohup python3 -u  train.py --batch_size=128 --num_epochs=1000 --learn_rate=0.0001 --category="train" > logs.out 2>&1 &
     # python train.py --batch_size=32 --num_epochs=200 --num_classes=20 --category="test"
 
     config = tf.ConfigProto()
-    config.gpu_options.per_process_gpu_memory_fraction = 0.45  # 占用GPU90%的显存
+    config.gpu_options.per_process_gpu_memory_fraction = 0.44  # 占用GPU90%的显存
     K.set_session(tf.Session(config=config))
 
     # 创建模型
     extract_feature_model, sr_model = construct_model(FLAGS.num_classes)
+    # extract_feature_model, sr_model = construct_model_dnn(FLAGS.num_classes)
 
     # 创建优化器
     opt = Adam(lr=FLAGS.learn_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
@@ -94,7 +95,7 @@ if __name__ == '__main__':
 
     # 学习率衰减
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=10,
-                                  min_lr=1e-8, mode="min", cooldown=20)
+                                  min_lr=1e-8, mode="min", cooldown=20, verbose=1)
 
     tbCallBack = TensorBoard(log_dir=FLAGS.tensorboard_dir,
                              histogram_freq=0,

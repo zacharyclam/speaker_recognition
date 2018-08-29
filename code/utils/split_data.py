@@ -29,3 +29,13 @@ def split_data(data_dir, category, split_scale=0.05):
             validate_list.append((file_list[partition:], str(i).zfill(4)))
 
     return train_list, validate_list
+
+
+if __name__ == "__main__":
+    root_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
+
+    data_dir = os.path.join(root_dir, "data")
+    category = "vad_data"
+    train_list, validate_list = split_data(data_dir, category, split_scale=0.05)
+    for file_list, label in train_list:
+        print(len(file_list), label)

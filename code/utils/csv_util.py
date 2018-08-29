@@ -34,7 +34,7 @@ def features2csv(save_dir, category, model, mean=True, sentence_nums=20):
         cnt = 0
         for line in tqdm(f):
             bin_path, label = line.split(" ")
-            fbank = np.fromfile(bin_path, dtype=np.float).reshape((299, 40))
+            fbank = np.fromfile(bin_path, dtype=np.float).reshape((99, 40))
             # fbank = np.fromfile(bin_path, dtype=np.float)
             fbank_list.append(fbank)
 

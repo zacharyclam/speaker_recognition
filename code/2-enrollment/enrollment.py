@@ -31,7 +31,7 @@ flags.DEFINE_string(
     "the model dir")
 
 flags.DEFINE_string(
-    "category", "test", "the category of data")
+    "category", "dev", "the category of data")
 
 flags.DEFINE_integer(
     "enroll_sentence_nums", 20,
