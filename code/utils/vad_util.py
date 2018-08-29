@@ -10,7 +10,6 @@ import wave
 
 def read_wave(path):
     """Reads a .wav file.
-
     Takes the path, and returns (PCM audio data, sample rate).
     """
     with contextlib.closing(wave.open(path, 'rb')) as wf:
@@ -26,7 +25,6 @@ def read_wave(path):
 
 def write_wave(path, audio, sample_rate):
     """Writes a .wav file.
-
     Takes path, PCM audio data, and sample rate.
     """
     with contextlib.closing(wave.open(path, 'wb')) as wf:
@@ -47,10 +45,8 @@ class Frame(object):
 
 def frame_generator(frame_duration_ms, audio, sample_rate):
     """Generates audio frames from PCM audio data.
-
     Takes the desired frame duration in milliseconds, the PCM data, and
     the sample rate.
-
     Yields Frames of the requested duration.
     """
     n = int(sample_rate * (frame_duration_ms / 1000.0) * 2)
@@ -66,28 +62,22 @@ def frame_generator(frame_duration_ms, audio, sample_rate):
 def vad_collector(sample_rate, frame_duration_ms,
                   padding_duration_ms, vad, frames):
     """Filters out non-voiced audio frames.
-
     Given a webrtcvad.Vad and a source of audio frames, yields only
     the voiced audio.
-
     Uses a padded, sliding window algorithm over the audio frames.
     When more than 90% of the frames in the window are voiced (as
     reported by the VAD), the collector triggers and begins yielding
     audio frames. Then the collector waits until 90% of the frames in
     the window are unvoiced to detrigger.
-
     The window is padded at the front and back to provide a small
     amount of silence or the beginnings/endings of speech around the
     voiced frames.
-
     Arguments:
-
     sample_rate - The audio sample rate, in Hz.
     frame_duration_ms - The frame duration in milliseconds.
     padding_duration_ms - The amount to pad the window, in milliseconds.
     vad - An instance of webrtcvad.Vad.
     frames - a source of audio frames (sequence or generator).
-
     Returns: A generator that yields PCM audio data.
     """
     num_padding_frames = int(padding_duration_ms / frame_duration_ms)

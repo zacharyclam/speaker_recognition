@@ -1,4 +1,8 @@
-import sys
+#!/usr/env/python python3
+# -*- coding: utf-8 -*-
+# @File     : vad_util.py
+# @Time     : 2018/8/29 13:37
+# @Software : PyCharm
 import os
 import re
 from tqdm import tqdm
@@ -45,7 +49,7 @@ FLAGS = flags.FLAGS
 
 flags.DEFINE_string("data_dir", os.path.join(root_dir, "data"), "")
 flags.DEFINE_string("save_dir", os.path.join(root_dir, "data/vad_data"), "")
-flags.DEFINE_string("category", "test", help="the category of data")
+flags.DEFINE_string("category", "dev", help="the category of data")
 flags.DEFINE_integer("mode", 3, "")
 
 

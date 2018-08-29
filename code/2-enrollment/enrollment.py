@@ -34,7 +34,7 @@ flags.DEFINE_string(
     "category", "dev", "the category of data")
 
 flags.DEFINE_integer(
-    "enroll_sentence_nums", 20,
+    "enroll_sentence_nums", 15,
     "the enroll sentence nums")
 
 flags.DEFINE_integer(

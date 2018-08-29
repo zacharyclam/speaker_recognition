@@ -37,7 +37,7 @@ flags.DEFINE_string("category", "validate", "the category of data")
 
 
 def main(argv):
-    get_list(FLAGS.save_dir, FLAGS.category)
+    get_list(os.path.abspath(FLAGS.save_dir), FLAGS.category)
 
 
 if __name__ == "__main__":
