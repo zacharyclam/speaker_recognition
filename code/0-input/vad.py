@@ -6,16 +6,17 @@
 import os
 import re
 from tqdm import tqdm
-import webrtcvad
 from absl import flags, app
+import librosa
+import numpy as np
 
 try:
-    from code.utils.vad_util import read_wave, frame_generator, write_wave, vad_collector
+    from code.utils.vad_util import remove_silence
 except ImportError:
     # ubuntu 下运行会出现 ImportError
     import sys
     sys.path.append(os.path.abspath(os.path.join(os.getcwd(), "..")))
-    from utils.vad_util import read_wave, frame_generator, write_wave, vad_collector
+    from utils.vad_util import remove_silence
 
 
 def get_datalist(data_dir, category):
@@ -29,19 +30,23 @@ def get_datalist(data_dir, category):
     return data_list
 
 
-def vad_wav(vad_detector, wav_path, save_dir):
-    wav_name = re.search(r"B\S+.$", wav_path).group(0)[:-4]
+def vad_wav(wav_path, save_dir, sr=16000):
+    wav_name = re.search(r"B\S+.$", wav_path).group(0)
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
 
-    audio, sample_rate = read_wave(wav_path)
-    frames = frame_generator(30, audio, sample_rate)
+    wav_data, rate = librosa.load(wav_path, sr)
+    # # 归一化 (-1,1)
+    # try:
+    #     wav_data = wav_data.tolist() / max(max(wav_data), -min(wav_data))
+    # except ValueError:
+    #     # 读取文件为空
+    #     return None
+    # wav_data = np.array(wav_data)
 
-    frames = list(frames)
-    segments = vad_collector(sample_rate, 30, 300, vad_detector, frames)
-    for i, segment in enumerate(segments):
-        path = os.path.join(save_dir, wav_name + "_{}.wav".format(i))
-        write_wave(path, segment, sample_rate)
+    y = remove_silence(wav_data, wav_data, 139, 300)
+    # 写入文件
+    librosa.output.write_wav(os.path.join(save_dir, wav_name), y, rate)
 
 
 root_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
@@ -49,18 +54,16 @@ FLAGS = flags.FLAGS
 
 flags.DEFINE_string("data_dir", os.path.join(root_dir, "data"), "")
 flags.DEFINE_string("save_dir", os.path.join(root_dir, "data/vad_data"), "")
-flags.DEFINE_string("category", "dev", help="the category of data")
-flags.DEFINE_integer("mode", 3, "")
+flags.DEFINE_string("category", "test", help="the category of data")
 
 
 def main(args):
     data_list = get_datalist(FLAGS.data_dir, FLAGS.category)
-    vad_dector = webrtcvad.Vad(FLAGS.mode)
     save_path = os.path.join(FLAGS.save_dir, FLAGS.category)
 
     for file_list, label in tqdm(data_list):
         for wav_path in file_list:
-            vad_wav(vad_dector, wav_path, os.path.join(save_path, label))
+            vad_wav(wav_path, os.path.join(save_path, label))
 
 
 if __name__ == '__main__':
