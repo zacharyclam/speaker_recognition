@@ -7,3 +7,6 @@
 
 
 based on d-vector
+模型结构：
+
+![avatar](https://github.com/houzhengzhang/speaker_recognition/blob/master/model_struct.png)
