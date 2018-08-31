@@ -36,13 +36,6 @@ def vad_wav(wav_path, save_dir, sr=16000):
         os.makedirs(save_dir)
 
     wav_data, rate = librosa.load(wav_path, sr)
-    # # 归一化 (-1,1)
-    # try:
-    #     wav_data = wav_data.tolist() / max(max(wav_data), -min(wav_data))
-    # except ValueError:
-    #     # 读取文件为空
-    #     return None
-    # wav_data = np.array(wav_data)
 
     y = remove_silence(wav_data, wav_data, 139, 300)
     # 写入文件
@@ -54,17 +47,24 @@ FLAGS = flags.FLAGS
 
 flags.DEFINE_string("data_dir", os.path.join(root_dir, "data"), "")
 flags.DEFINE_string("save_dir", os.path.join(root_dir, "data/vad_data"), "")
-flags.DEFINE_string("category", "test", help="the category of data")
+flags.DEFINE_string("category", "dev", help="the category of data")
 
 
 def main(args):
     data_list = get_datalist(FLAGS.data_dir, FLAGS.category)
     save_path = os.path.join(FLAGS.save_dir, FLAGS.category)
+    #
+    # for file_list, label in tqdm(data_list):
+    #     for wav_path in file_list:
+    #         vad_wav(wav_path, os.path.join(save_path, label))
+    wav_data, rate = librosa.load("recorded_audio.wav", sr=16000)
 
-    for file_list, label in tqdm(data_list):
-        for wav_path in file_list:
-            vad_wav(wav_path, os.path.join(save_path, label))
+    y = remove_silence(wav_data, wav_data, 139, 300)
+    # 写入文件
+    librosa.output.write_wav("change.wav", y, rate)
 
 
 if __name__ == '__main__':
     app.run(main)
+    # nohup python3 -u vad.py --save_dir="../../data/vad_data"  --data_dir="../../../../untar_data" --category="train" > logs.out 2>&1 &
+
