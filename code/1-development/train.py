@@ -11,8 +11,9 @@ from keras.callbacks import ModelCheckpoint, TensorBoard, ReduceLROnPlateau
 import keras.backend as K
 import numpy as np
 
-from model import construct_model, construct_model_dnn
+from model import construct_model
 from data_feeder import generate_fit
+
 
 root_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
 
@@ -33,7 +34,7 @@ tf.flags.DEFINE_float(
     help="learn rate (default: 0.0001)")
 
 tf.flags.DEFINE_string(
-    "category", default="",
+    "category", default="train",
     help="the category of data")
 
 tf.flags.DEFINE_string(
@@ -77,9 +78,7 @@ if __name__ == '__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = "1"
     # 最大池化效果好
     # tensorboard --logdir="logs/" --port=49652
-    # pid 37234
-    # nohup python3 -u  train.py --batch_size=128 --num_epochs=1000 --learn_rate=0.0001 --category="train" > logs.out 2>&1 &
-    # python train.py --batch_size=32 --num_epochs=200 --num_classes=20 --category="test"
+    # pid 29761
 
     config = tf.ConfigProto()
     config.gpu_options.per_process_gpu_memory_fraction = 0.44  # 占用GPU90%的显存
@@ -87,7 +86,6 @@ if __name__ == '__main__':
 
     # 创建模型
     extract_feature_model, sr_model = construct_model(FLAGS.num_classes)
-    # extract_feature_model, sr_model = construct_model_dnn(FLAGS.num_classes)
 
     # 创建优化器
     opt = Adam(lr=FLAGS.learn_rate, beta_1=0.9, beta_2=0.999, epsilon=1e-08)
@@ -95,7 +93,7 @@ if __name__ == '__main__':
 
     # 学习率衰减
     reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=10,
-                                  min_lr=1e-8, mode="min", cooldown=20, verbose=1)
+                                  min_lr=1e-8, mode="min", cooldown=10, verbose=1)
 
     tbCallBack = TensorBoard(log_dir=FLAGS.tensorboard_dir,
                              histogram_freq=0,
@@ -125,8 +123,8 @@ if __name__ == '__main__':
 
     # list all data in history
     # summarize history for accuracy
-    plt.plot(history['acc'])
-    plt.plot(history['val_acc'])
+    plt.plot(history.history['acc'])
+    plt.plot(history.history['val_acc'])
     plt.title('model accuracy')
     plt.ylabel('accuracy')
     plt.xlabel('epoch')
@@ -134,8 +132,8 @@ if __name__ == '__main__':
     plt.savefig(os.path.join(result_path, "acc.jpg"))
     plt.show()
     # summarize history for loss
-    plt.plot(history['loss'])
-    plt.plot(history['val_loss'])
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
     plt.title('model loss')
     plt.ylabel('loss')
     plt.xlabel('epoch')
@@ -143,10 +141,13 @@ if __name__ == '__main__':
     plt.savefig(os.path.join(result_path, "loss.jpg"))
     plt.show()
 
-    plt.plot(history['lr'])
+    plt.plot(history.history['lr'])
     plt.title('model loss')
     plt.ylabel('learn rate')
     plt.xlabel('epoch')
     plt.legend(['learn rate'], loc='upper left')
     plt.savefig(os.path.join(result_path, "lr.jpg"))
     plt.show()
+
+    # usage
+    # nohup python3 -u  train.py --batch_size=128 --num_epochs=1000 --learn_rate=0.0001  > logs.out 2>&1 &

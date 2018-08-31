@@ -67,7 +67,6 @@ if __name__ == '__main__':
     for f in feat:
         print(f.shape)
 
-
     # from split_data import split_data
     # root_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
     #
