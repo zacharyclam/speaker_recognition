@@ -11,9 +11,9 @@ from keras.utils import to_categorical
 def generate_fit(path, batch_size, classe_nums):
     """
 
-    :param path: 数据路径
+    :param path: list.txt路径
     :param batch_size:
-    :param classe_nums: 类别
+    :param classe_nums: 类别数
     :return:
     """
     with open(path) as f:

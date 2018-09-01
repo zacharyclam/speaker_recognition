@@ -14,20 +14,20 @@ try:
 except ModuleNotFoundError:
     from code.utils.csv_util import features2csv
 
-parent_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
+root_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
 
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string(
-    "data_dir", os.path.join(parent_dir, "data/enrollment_evalution"),
+    "data_dir", os.path.join(root_dir, "data/enrollment_evalution"),
     "the enrolled data dir")
 
 flags.DEFINE_string(
-    "save_dir", os.path.join(parent_dir, "results/features"),
-    "the save data dir")
+    "save_dir", os.path.join(root_dir, "results/features"),
+    "the save d-vector features dir")
 
 flags.DEFINE_string(
-    "weight_path", "D:\PythonProject\speakerRecognition\model\spk-01000-1.00.h5",
+    "weight_path", os.path.join(root_dir, "model/spk-01000-1.00.h5"),
     "the model dir")
 
 flags.DEFINE_string(

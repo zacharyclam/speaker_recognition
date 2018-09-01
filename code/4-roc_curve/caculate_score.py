@@ -18,16 +18,16 @@ except ModuleNotFoundError:
     from code.utils.calculate_cds import get_cds
 
 
-parent_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
+root_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
 
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string(
-    "features_dir", default=os.path.join(parent_dir, "results/features"),
+    "features_dir", default=os.path.join(root_dir, "results/features"),
     help="the dir of enrolllment")
 
 flags.DEFINE_string(
-    "score_dir", default=os.path.join(parent_dir, "results/scores"),
+    "score_dir", default=os.path.join(root_dir, "results/scores"),
     help="the dir of saving score")
 
 
@@ -40,6 +40,7 @@ def main(argv):
     validate_dict = read_features(FLAGS.features_dir, "validate")
     strange_dict = read_features(FLAGS.features_dir, "stranger")
 
+    # 计算score
     # score n/tp/fp
     with open(os.path.join(FLAGS.score_dir, "score.txt"), "w") as f:
         for val_label, val_feat in tqdm(validate_dict):

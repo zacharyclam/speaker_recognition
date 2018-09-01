@@ -31,7 +31,7 @@ def construct_model(classe_nums):
     model.add(MaxoutDense(512, nb_feature=4, name="block2_maxout3"))
     model.add(Dense(classe_nums, activation='softmax', name="predict"))
 
-    plot_model(model, to_file='model_struct.png', show_shapes=True, show_layer_names=False)
+    # plot_model(model, to_file='model_struct.png', show_shapes=True, show_layer_names=False)
 
     model.summary()
 

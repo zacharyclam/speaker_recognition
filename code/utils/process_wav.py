@@ -66,12 +66,3 @@ if __name__ == '__main__':
     print(feat)
     for f in feat:
         print(f.shape)
-
-    # from split_data import split_data
-    # root_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
-    #
-    # data_dir = os.path.join(root_dir, "data")
-    # category = "vad_data"
-    # save_dir = os.path.join(root_dir, "data/vad_bin")
-    # train_list, validate_list = split_data(data_dir, category, split_scale=0.05)
-    # wav2fb(train_list, save_dir, "train")

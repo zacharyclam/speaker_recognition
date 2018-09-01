@@ -8,7 +8,6 @@ import re
 from tqdm import tqdm
 from absl import flags, app
 import librosa
-import numpy as np
 
 try:
     from code.utils.vad_util import remove_silence
@@ -45,26 +44,21 @@ def vad_wav(wav_path, save_dir, sr=16000):
 root_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
 FLAGS = flags.FLAGS
 
-flags.DEFINE_string("data_dir", os.path.join(root_dir, "data"), "")
-flags.DEFINE_string("save_dir", os.path.join(root_dir, "data/vad_data"), "")
+flags.DEFINE_string("data_dir", os.path.join(root_dir, "data"), help="the original audio data dir")
+flags.DEFINE_string("save_dir", os.path.join(root_dir, "data/vad_data"), help="save vad data dir")
 flags.DEFINE_string("category", "dev", help="the category of data")
 
 
 def main(args):
     data_list = get_datalist(FLAGS.data_dir, FLAGS.category)
     save_path = os.path.join(FLAGS.save_dir, FLAGS.category)
-    #
-    # for file_list, label in tqdm(data_list):
-    #     for wav_path in file_list:
-    #         vad_wav(wav_path, os.path.join(save_path, label))
-    wav_data, rate = librosa.load("recorded_audio.wav", sr=16000)
 
-    y = remove_silence(wav_data, wav_data, 139, 300)
-    # 写入文件
-    librosa.output.write_wav("change.wav", y, rate)
+    for file_list, label in tqdm(data_list):
+        for wav_path in file_list:
+            vad_wav(wav_path, os.path.join(save_path, label))
 
 
 if __name__ == '__main__':
     app.run(main)
+    # usage
     # nohup python3 -u vad.py --save_dir="../../data/vad_data"  --data_dir="../../../../untar_data" --category="train" > logs.out 2>&1 &
-

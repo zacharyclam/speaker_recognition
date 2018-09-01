@@ -11,7 +11,7 @@ FLAGS = flags.FLAGS
 
 flags.DEFINE_string(
     "data_dir", "../../data/data_aishell/wav/",
-    "the orient tar data dir")
+    "the original tar data dir")
 
 flags.DEFINE_string(
     "save_dir", "../../untar_data/",
@@ -25,21 +25,11 @@ def untar_dir(srcname, data_path):
     tar_handle.close()
 
 
-def untar(data_dir, save_dir):
-    """
-    
-    @param data_dir:
-    @param save_dir:
-    @return:
-    """
-    # 将音频文件解压
-    for root, dir, file in os.walk(data_dir):
-        for filename in file:
-            untar_dir(os.path.join(root, filename), save_dir)
-
-
 def main(argv):
-    untar(FLAGS.data_dir, FLAGS.save_dir)
+    # 将原始音频文件解压
+    for root, dir, file in os.walk(FLAGS.data_dir):
+        for filename in file:
+            untar_dir(os.path.join(root, filename), FLAGS.save_dir)
     print("finished")
 
 

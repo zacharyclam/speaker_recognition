@@ -21,15 +21,15 @@ def confusion_matrix_test(features_dir, matrix_dir):
     np.savetxt(os.path.join(matrix_dir, "confusion_matrix.csv"), confusion_matrix, fmt='%d', delimiter=",")
 
 
-parent_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
+root_dir = os.path.abspath(os.path.join(os.getcwd(), "../.."))
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string(
-    "features_dir", os.path.join(parent_dir, "results/features"),
+    "features_dir", os.path.join(root_dir, "results/features"),
     "the enrolled data dir")
 
 flags.DEFINE_string(
-    "matrix_dir", default=os.path.join(parent_dir, "results"),
+    "matrix_dir", default=os.path.join(root_dir, "results"),
     help="the dir of saving confusion matrix")
 
 

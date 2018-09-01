@@ -61,8 +61,7 @@ if not os.path.exists(FLAGS.tensorboard_dir):
     os.makedirs(FLAGS.tensorboard_dir)
 
 # the paths
-cwd = os.getcwd()  # current working directory
-train_path = os.path.join(FLAGS.datalist_dir, "train_list.txt")  # train text path
+train_path = os.path.join(FLAGS.datalist_dir, "train_list.txt")
 test_path = os.path.join(FLAGS.datalist_dir, "validate_list.txt")
 
 # count the number of samples
@@ -75,13 +74,11 @@ test_nums = len(f.readlines())  # number of train samples
 f.close()
 
 if __name__ == '__main__':
+    # 指定使用显卡
     os.environ["CUDA_VISIBLE_DEVICES"] = "1"
-    # 最大池化效果好
-    # tensorboard --logdir="logs/" --port=49652
-    # pid 29761
 
     config = tf.ConfigProto()
-    config.gpu_options.per_process_gpu_memory_fraction = 0.44  # 占用GPU90%的显存
+    config.gpu_options.per_process_gpu_memory_fraction = 0.90  # 占用GPU90%的显存
     K.set_session(tf.Session(config=config))
 
     # 创建模型
@@ -103,6 +100,7 @@ if __name__ == '__main__':
     checkpoint = ModelCheckpoint(filepath=os.path.join(FLAGS.model_dir, "checkpoint-{epoch:05d}-{val_acc:.2f}.h5"),
                                  monitor='val_acc', verbose=2, save_best_only=True, mode='max')
 
+    # 开始训练
     sr_model.fit_generator(generate_fit(train_path, FLAGS.batch_size, FLAGS.num_classes),
                            steps_per_epoch=np.ceil(train_nums / FLAGS.batch_size),
                            shuffle=True,
@@ -114,40 +112,6 @@ if __name__ == '__main__':
                            )
 
     sr_model.save("spk.h5")
-    history = sr_model.history
-
-    # 绘制曲线
-    import matplotlib.pyplot as plt
-
-    result_path = os.path.join(os.path.abspath(os.path.join(os.getcwd(), "..")), "plots")
-
-    # list all data in history
-    # summarize history for accuracy
-    plt.plot(history.history['acc'])
-    plt.plot(history.history['val_acc'])
-    plt.title('model accuracy')
-    plt.ylabel('accuracy')
-    plt.xlabel('epoch')
-    plt.legend(['train', 'test'], loc='upper left')
-    plt.savefig(os.path.join(result_path, "acc.jpg"))
-    plt.show()
-    # summarize history for loss
-    plt.plot(history.history['loss'])
-    plt.plot(history.history['val_loss'])
-    plt.title('model loss')
-    plt.ylabel('loss')
-    plt.xlabel('epoch')
-    plt.legend(['train', 'test'], loc='upper left')
-    plt.savefig(os.path.join(result_path, "loss.jpg"))
-    plt.show()
-
-    plt.plot(history.history['lr'])
-    plt.title('model loss')
-    plt.ylabel('learn rate')
-    plt.xlabel('epoch')
-    plt.legend(['learn rate'], loc='upper left')
-    plt.savefig(os.path.join(result_path, "lr.jpg"))
-    plt.show()
 
     # usage
     # nohup python3 -u  train.py --batch_size=128 --num_epochs=1000 --learn_rate=0.0001  > logs.out 2>&1 &
