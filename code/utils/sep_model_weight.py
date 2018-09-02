@@ -36,4 +36,3 @@ def main(argv):
 
 if __name__ == "__main__":
     app.run(main)
-    # model/checkpoint-00484-0.99.h5

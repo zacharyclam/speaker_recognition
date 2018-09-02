@@ -60,7 +60,7 @@ def wav2fb(data_list, save_dir, usage):
 
 
 if __name__ == '__main__':
-    wavname = "D:\\PythonProject\\speakerRecognition\\data\\train\\S0002\\BAC009S0002W0122.wav"
+    wavname = "BAC009S0002W0122.wav"
 
     feat = get_log_fbank(wavname)
     print(feat)

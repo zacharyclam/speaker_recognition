@@ -49,7 +49,7 @@ def comman(sound):
 
 if __name__ == '__main__':
 
-    wav_data, rate = librosa.load("D:\PythonProject\speakerRecognition\BAC009S0908W0161.wav", sr=16000)
+    wav_data, rate = librosa.load("BAC009S0908W0161.wav", sr=16000)
 
     y = remove_silence(wav_data, wav_data, 139, 300)
     librosa.output.write_wav("c.wav", y, sr=16000)
