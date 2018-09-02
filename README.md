@@ -7,26 +7,26 @@
 
 ​	使用数据集：AISHELL-ASR0009-OS1  [下载](https://pan.baidu.com/s/1dFKRLwl#list/path=%2F)
 
-​	模型结构参考论文 “DEEP NEURAL NETWORKS FOR SMALL FOOTPRINT TEXT-DEPENDENT“，在实现时将论文中所提出的4层DNN结构的前两层替换为两层一维卷积，训练时通过Softmax分类器进行训练，注册及验证时将Softmax层去掉，DNN的输出作为d-vector,通过计算 *cosine-distance*  来判别说话人是否在注册集内。
+​	  模型结构参考论文 “DEEP NEURAL NETWORKS FOR SMALL FOOTPRINT TEXT-DEPENDENT“，在实现时将论文中所提出的4层DNN结构的前两层替换为两层一维卷积，训练时通过Softmax分类器进行训练，注册及验证时将Softmax层去掉，DNN的输出作为d-vector,通过计算 *cosine-distance*  来判别说话人是否在注册集内。
 
 * #### 项目结构
 
   ```
   - code
-    -- 0-input				       # 数据预处理
-    -- 1-development			   # 模型定义及训练
-    -- 2-enrollment			     # 注册
-    -- 3-evalution			     # 陌生人验证评估
-    -- 4-roc_curve			     # 绘制ROC曲线图，并计算EER及阈值
+    -- 0-input				          # 数据预处理
+    -- 1-development			          # 模型定义及训练
+    -- 2-enrollment			          # 注册
+    -- 3-evalution			          # 陌生人验证评估
+    -- 4-roc_curve			          # 绘制ROC曲线图，并计算EER及阈值
     -- utils				    
   - data					           # 数据存放
   - docs					           # 参考论文
   - logs					           # tensorboard 日志文件
-  - model						         # 模型存储文件
+  - model						   # 模型存储文件
   - results					
-    -- features				       # 根据模型计算出注册人及陌生人的d-vector
-    -- plots					       # 绘制完成的ROC曲线图
-    -- scores					       # 绘制ROC曲线所需的score
+    -- features				           # 根据模型计算出注册人及陌生人的d-vector
+    -- plots					   # 绘制完成的ROC曲线图
+    -- scores					   # 绘制ROC曲线所需的score
   ```
 
   
@@ -71,7 +71,7 @@
 
 * #### 评估模型
 
-   直接运行model_test.sh 脚本即可绘制ROC曲线图并计算EER，该脚本需要模型的路径参数，结果文件会保存至results目录下
+     直接运行model_test.sh 脚本即可绘制ROC曲线图并计算EER，该脚本需要模型的路径参数，结果文件会保存至results目录下
 
    usage:
 
