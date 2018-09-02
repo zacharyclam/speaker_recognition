@@ -1,15 +1,15 @@
-# Speaker Recognition
+# Speaker Recognition 
 
-![avatar](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)
-![avatar](https://badges.frapsoft.com/os/v2/open-source.png?v=103)
-![avatar](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)
-![avatar](https://img.shields.io/badge/license-Apache_2-blue.svg)
+[![avatar](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/houzhengzhang/speaker_recognition/pulls)
+[![avatar](https://badges.frapsoft.com/os/v2/open-source.png?v=103)](https://github.com/ellerbrock/open-source-badges)
+[![avatar](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
+[![avatar](https://img.shields.io/badge/license-Apache_2-blue.svg)](https://github.com/houzhengzhang/speaker_recognition/blob/master/LICENSE)
 
 ​	使用数据集：AISHELL-ASR0009-OS1  [下载](https://pan.baidu.com/s/1dFKRLwl#list/path=%2F)
 
 ​	模型结构参考论文 “DEEP NEURAL NETWORKS FOR SMALL FOOTPRINT TEXT-DEPENDENT“，在实现时将论文中所提出的4层DNN结构的前两层替换为两层一维卷积，训练时通过Softmax分类器进行训练，注册及验证时将Softmax层去掉，DNN的输出作为d-vector,通过计算 *cosine-distance*  来判别说话人是否在注册集内。
 
-* ####项目结构
+* #### 项目结构
 
   ```
   - code
@@ -31,7 +31,7 @@
 
   
 
-* ####训练
+* #### 训练
 
   * 首先对下载好的数据集进行VAD处理，处理代码位于 code/0-input/vad.py 
 
@@ -78,7 +78,7 @@
    model_test.sh "model/checkpoint-00484-0.99.h5"
    ```
 
-* ####模型参数统计
+* #### 模型参数统计
 
   Total params: 5,781,524
 
