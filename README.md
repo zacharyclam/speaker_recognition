@@ -13,20 +13,20 @@
 
   ```
   - code
-    -- 0-input				    # 数据预处理
-    -- 1-development			     # 模型定义及训练
+    -- 0-input				       # 数据预处理
+    -- 1-development			   # 模型定义及训练
     -- 2-enrollment			     # 注册
     -- 3-evalution			     # 陌生人验证评估
     -- 4-roc_curve			     # 绘制ROC曲线图，并计算EER及阈值
     -- utils				    
-  - data					        # 数据存放
-  - docs					        # 参考论文
-  - logs					        # tensorboard 日志文件
-  - model						    # 模型存储文件
+  - data					           # 数据存放
+  - docs					           # 参考论文
+  - logs					           # tensorboard 日志文件
+  - model						         # 模型存储文件
   - results					
-    -- features					# 根据模型计算出注册人及陌生人的d-vector
-    -- plots					    # 绘制完成的ROC曲线图
-    -- scores					    # 绘制ROC曲线所需的score
+    -- features				       # 根据模型计算出注册人及陌生人的d-vector
+    -- plots					       # 绘制完成的ROC曲线图
+    -- scores					       # 绘制ROC曲线所需的score
   ```
 
   
@@ -47,7 +47,8 @@
     usage:
 
     ```shell
-    python process_data.py --data_dir="../../data/vad_data"  --save_dir="提取log fbank后 bin文件保存路径" --category="要处理的数据类别" \ 
+    python process_data.py --data_dir="../../data/vad_data"  --save_dir="提取log fbank后 bin文件保存路径" \
+    --category="要处理的数据类别" \ 
     --validata_scale="若处理训练集数据，该参数可设置为验证集所占比例，eg：0.05， 若处理其他类别数据将其设置为0即可"
     ```
 
