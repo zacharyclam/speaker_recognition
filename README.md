@@ -97,7 +97,7 @@
 
 - #### 模型下载：
 
-  百度网盘地址：https://pan.baidu.com/s/1wdBvyBkRwC0TyX9R2xnmLw		密码：2w3q
+  百度网盘地址：https://pan.baidu.com/s/1rrVCKEIiqzZ3fTr4sKzr1Q		密码：3gri
 
   *其中 checkpoint-00484-0.99.h5 文件包含Softmax层 ，checkpoint-00484-0.99_notop.h5 已去掉Softmax层* 
 
