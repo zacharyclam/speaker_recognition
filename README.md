@@ -1,9 +1,9 @@
 # Speaker Recognition 
 
-[![avatar](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/houzhengzhang/speaker_recognition/pulls)
+[![avatar](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/zacharyclam/speaker_recognition/pulls)
 [![avatar](https://badges.frapsoft.com/os/v2/open-source.png?v=103)](https://github.com/ellerbrock/open-source-badges)
 [![avatar](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
-[![avatar](https://img.shields.io/badge/license-Apache_2-blue.svg)](https://github.com/houzhengzhang/speaker_recognition/blob/master/LICENSE)
+[![avatar](https://img.shields.io/badge/license-Apache_2-blue.svg)](https://github.com/zacharyclam/speaker_recognition/blob/master/LICENSE)
 
 ​	使用数据集：AISHELL-ASR0009-OS1  [下载](https://pan.baidu.com/s/1dFKRLwl#list/path=%2F)
 
@@ -93,7 +93,7 @@
 
    使用340人的语音数据进行训练，训练完成后，使用dev数据集共40人进行注册，将数据分为注册和验证两部分，每人选取15s音频进行注册，然后用100条长度为1s的音频进行验证，统计TP和FP的个数。使用test数据集共20人进行陌生人验证，每人选取100条长度为1s的音频，统计每条音频与注册集内得分最高的cds值。通过上述测试数据绘制ROC曲线图，计算出EER为12.2%，阈值为0.7824.
 
-<img src="https://github.com/houzhengzhang/speaker_recognition/blob/master/results/plots/checkpoint-00484-0.99.jpg" width="500" hegiht="313" align=center />
+<img src="https://github.com/zacharyclam/speaker_recognition/blob/master/results/plots/checkpoint-00484-0.99.jpg" width="500" hegiht="313" align=center />
 
 - #### 模型下载：
 
